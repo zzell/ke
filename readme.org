@@ -1,0 +1,41 @@
+* Core
+** Programming language
+*** Stack and Heap
+    https://segment.com/blog/allocation-efficiency-in-high-performance-go-services/
+
+    Go allocates memory in two places: a global heap for dynamic 
+    allocations and a local stack for each goroutine. Go prefers 
+    allocation on the stack — most of the allocations within a 
+    given Go program will be on the stack. It’s cheap because it 
+    only requires two CPU instructions: one to push onto the 
+    stack for allocation, and another to release from the stack.
+    
+    Heap - is the global memory of programm. If function creates 
+    a vairable and returns reference to it, the variable allocates
+    in heap.
+    
+    Stack - is local memory allocated for function (per goroutine).
+    It has its own top that moves up and down for each nested call.
+    This memory is freed once function is returned.
+    
+    Compiler is smart anough to determine if variable has to be 
+    allocated in stack or in heap, it performs `escape analysis`
+    - set of rules that vairable must pass on compilation stage.
+    If it doesn't it will be allocated in heap.
+
+    Go prefers allocation on the stack — most of the allocations 
+    within a given Go program will be on the stack. It’s cheap 
+    because it only requires two CPU instructions: one to push 
+    onto the stack for allocation, and another to release from the 
+    stack.
+  
+    Stack allocation requires that the lifetime and memory footprint
+    of a variable can be determined at compile time. Otherwise a 
+    dynamic allocation onto the heap occurs at runtime. `malloc` 
+    must search for a chunk of free memory large enough to hold the 
+    new value. Later down the line, the garbage collector scans the 
+    heap for objects which are no longer referenced.
+
+    The rule of thumb is: pointers point to data allocated on the heap.
+    Thus, reducing the number of pointers in a program reduces the 
+    number of heap allocations.
