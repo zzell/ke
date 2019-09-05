@@ -1,3 +1,125 @@
+* OOD
+** GoF Design Patterns
+*** Creational
+**** Singleton
+     Asserts that the whole application will have single inctance
+     of certain object. The access to the object goes through the
+     'get_instance..' method. Has side effects.
+
+**** Builder
+     Defines process of step by step building of complex object
+     with bunch of pre-defined options. After the object has 
+     created, it may be used. (e.g. HTTP Client with different 
+     options like retrying, tracking mechanism, custom transport, 
+     tls/ssl)
+
+**** Factory
+     Creates different objects with common interface depending of
+     input options. (e.g. Authentication object with method Auth
+     but with different grant_types: client-credentials, 
+     authorization_code)
+
+**** Abstrat factory
+     Use the Abstract Factory when your code needs to work with
+     various families of related products, but you don’t want it 
+     to depend on the concrete classes of those products—they 
+     might be unknown.
+
+     | car interface     |
+     |-------------------|
+     | + CreateCar       |
+     | + CreateEngine    |
+     |-------------------|
+     | BMW interface     |
+     |-------------------|
+     | + CreateCar       |
+     | + CreateEngine    |
+     |-------------------|
+     | Citroen interface |
+     |-------------------|
+     | + CreateCar       |
+     | + CreateEngine    |
+
+**** Prototype
+     Clone() object in current state
+
+*** Structural
+**** Adapter
+     Used in places where some 3rd-party code expects different
+     interface programm has.
+     - Middle layer class that extends existing class
+     - (Go) Function that receives existsing class and returns
+       needed one.
+     
+**** Bridge [Mocks]
+     Composition.
+     Way to set apart usage and implementation of object (interface).
+     Parent struct doesn't care about implementation.
+    
+**** Composite 
+     Tree-like interface structure. Interface has methods to 
+     add/remove objects with SAME interface. The implementation 
+     struct contains the list of subtrees.
+     
+            [i]
+           / | \
+     [i]-[i][i][i]-[i]
+          /  |  \
+         [i][i][i]
+         
+**** Decorator 
+     Wraps behavior of method (function) and extends it.
+     - Composition 
+       Implement original interface (type SomeAdapter struct{..})
+     - Function 
+       Receive and return same fn schema, execute it insade 
+       and extend
+       
+**** Facade [incapsulation]
+     Hide implementation complexity behind simple interface
+     (interface here in generally)
+     
+**** Flyweight (Cache)
+     Save initialized (computed) ojects (info) insade object
+     to reuse it in future instead of create (compute) it again.
+     (like variables actually)
+     
+**** Proxy
+     Creates "wrapper" around of some object. PROXY OBJECT 
+     HAS TO IMPLEMENT ORIGINAL'S OBJECT INTERFACE. Proxy intercepts
+     calls to the real object before or after and can extend, 
+     perform validation, cache etc.
+
+*** Behavioral
+**** Chain of responsibility [middlewares]
+     Chain of object with same interface. Usually has method "next"
+     - If one part of chain fails, no further processing performs.
+     - Different way - stop processing on success.
+
+**** Command [delegation]
+     Sender -> Command -> Receiver
+     Creates middle layer set of commands where every command 
+     represented by its own class with common interface. (usually
+     with one method "Execute()") It requires additional layer to
+     bound Commands to Senders. On initialization, Command gets 
+     Receiver's instance. After that command may be assigned to 
+     Sender. Sender stores a list of Commands, and methods to add,
+     remove and execute them, this allows dinamically change Sender's 
+     behavior.
+     
+     Senders
+     [] [] [] [] [] []
+         Commands
+         [] [] []
+            Receiver
+            []
+
+**** Iterator
+     The most fucking complicated pattern used in complex data 
+     structures like trees. Move iteration over elements to its own
+     class, so data structure doesn't know about it. Allows to 
+     easily implement different iteration methods for complex data.
+
 * Core
 ** Programming language
 *** Stack and Heap
