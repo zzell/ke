@@ -1,5 +1,6 @@
 * OOD
 ** GoF Design Patterns
+   https://refactoring.guru/design-patterns/catalog
 *** Creational
 **** Singleton
      Asserts that the whole application will have single inctance
@@ -124,6 +125,79 @@
      class, so data structure doesn't know about it. Allows to 
      easily implement different iteration methods for complex data.
 
+**** Mediator
+     Mediator restricts direct communications between the objects and 
+     forces them to collaborate only via a mediator object. Solution 
+     for tightly coupled objects.
+
+     #+begin_src go
+     package main
+
+     import "fmt"
+     
+     func main() {
+       httpStream := new(HTTPStream)
+       grpcStream := new(GRPCStream)
+       streamMediator := StreamMediator{
+         HTTPStream: httpStream,
+         GRPCStream: grpcStream,
+       }
+       httpStream.Mediator = streamMediator
+       httpStream.IsAlive = true
+       grpcStream.Mediator = streamMediator
+       grpcStream.IsAlive = true
+       httpStream.Cancell()
+     }
+     
+     const (
+     	 HTTPStreamCancelled = iota
+     	 GRPCStreamCancelled
+     )
+     
+     type Mediator interface {
+     	 Notify(int)
+     }
+     
+     type StreamMediator struct {
+     	 HTTPStream *HTTPStream
+     	 GRPCStream *GRPCStream
+     }
+     
+     func (m StreamMediator) Notify(i int) {
+     	 switch i {
+     	 case HTTPStreamCancelled:
+     	 	m.GRPCStream.Cancell()
+     	 case GRPCStreamCancelled:
+     	 	m.HTTPStream.Cancell()
+     	 }
+     }
+     
+     type HTTPStream struct {
+     	 Mediator Mediator
+     	 IsAlive  bool
+     }
+     
+     func (s *HTTPStream) Cancell() {
+     	 if s.IsAlive {
+     	 	s.IsAlive = false
+     	 	s.Mediator.Notify(HTTPStreamCancelled)
+     	 	fmt.Println("HTTP stream cancelled")
+     	 }
+     }
+     
+     type GRPCStream struct {
+     	 Mediator Mediator
+     	 IsAlive  bool
+     }
+     
+     func (s *GRPCStream) Cancell() {
+       if s.IsAlive {
+         s.IsAlive = false
+         s.Mediator.Notify(GRPCStreamCancelled)
+         fmt.Println("GRPC stream cancelled")
+       }
+     }
+     #+end_src
 * Core
 ** Programming language
 *** Stack and Heap
