@@ -61,11 +61,13 @@
      add/remove objects with SAME interface. The implementation 
      struct contains the list of subtrees.
      
+     #+begin_src bash
             [i]
            / | \
      [i]-[i][i][i]-[i]
           /  |  \
          [i][i][i]
+     #+end_src
          
 **** Decorator 
      Wraps behavior of method (function) and extends it.
@@ -107,12 +109,14 @@
      remove and execute them, this allows dinamically change Sender's 
      behavior.
      
+     #+begin_src bash
      Senders
      [] [] [] [] [] []
          Commands
          [] [] []
             Receiver
             []
+     #+end_src
 
 **** Iterator
      The most fucking complicated pattern used in complex data 
