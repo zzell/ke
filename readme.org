@@ -150,44 +150,44 @@
      }
      
      const (
-     	 HTTPStreamCancelled = iota
-     	 GRPCStreamCancelled
+       HTTPStreamCancelled = iota
+       GRPCStreamCancelled
      )
      
      type Mediator interface {
-     	 Notify(int)
+       Notify(int)
      }
      
      type StreamMediator struct {
-     	 HTTPStream *HTTPStream
-     	 GRPCStream *GRPCStream
+       HTTPStream *HTTPStream
+       GRPCStream *GRPCStream
      }
      
      func (m StreamMediator) Notify(i int) {
-     	 switch i {
-     	 case HTTPStreamCancelled:
-     	 	m.GRPCStream.Cancell()
-     	 case GRPCStreamCancelled:
-     	 	m.HTTPStream.Cancell()
-     	 }
+       switch i {
+       case HTTPStreamCancelled:
+         m.GRPCStream.Cancell()
+       case GRPCStreamCancelled:
+         m.HTTPStream.Cancell()
+       }
      }
      
      type HTTPStream struct {
-     	 Mediator Mediator
-     	 IsAlive  bool
+       Mediator Mediator
+       IsAlive  bool
      }
      
      func (s *HTTPStream) Cancell() {
-     	 if s.IsAlive {
-     	 	s.IsAlive = false
-     	 	s.Mediator.Notify(HTTPStreamCancelled)
-     	 	fmt.Println("HTTP stream cancelled")
-     	 }
+       if s.IsAlive {
+         s.IsAlive = false
+         s.Mediator.Notify(HTTPStreamCancelled)
+         fmt.Println("HTTP stream cancelled")
+       }
      }
      
      type GRPCStream struct {
-     	 Mediator Mediator
-     	 IsAlive  bool
+       Mediator Mediator
+       IsAlive  bool
      }
      
      func (s *GRPCStream) Cancell() {
@@ -198,44 +198,65 @@
        }
      }
      #+end_src
-* Core
-** Programming language
-*** Stack and Heap
-    https://segment.com/blog/allocation-efficiency-in-high-performance-go-services/
+* Programming language
+** Stack and Heap
+   https://segment.com/blog/allocation-efficiency-in-high-performance-go-services/
 
-    Go allocates memory in two places: a global heap for dynamic 
-    allocations and a local stack for each goroutine. Go prefers 
-    allocation on the stack — most of the allocations within a 
-    given Go program will be on the stack. It’s cheap because it 
-    only requires two CPU instructions: one to push onto the 
-    stack for allocation, and another to release from the stack.
+   Go allocates memory in two places: a global heap for dynamic 
+   allocations and a local stack for each goroutine. Go prefers 
+   allocation on the stack — most of the allocations within a 
+   given Go program will be on the stack. It’s cheap because it 
+   only requires two CPU instructions: one to push onto the 
+   stack for allocation, and another to release from the stack.
     
-    Heap - is the global memory of programm. If function creates 
-    a vairable and returns reference to it, the variable allocates
-    in heap.
+   Heap - is the global memory of programm. If function creates 
+   a vairable and returns reference to it, the variable allocates
+   in heap.
     
-    Stack - is local memory allocated for function (per goroutine).
-    It has its own top that moves up and down for each nested call.
-    This memory is freed once function is returned.
+   Stack - is local memory allocated for function (per goroutine).
+   It has its own top that moves up and down for each nested call.
+   This memory is freed once function is returned.
     
-    Compiler is smart anough to determine if variable has to be 
-    allocated in stack or in heap, it performs `escape analysis`
-    - set of rules that vairable must pass on compilation stage.
-    If it doesn't it will be allocated in heap.
+   Compiler is smart anough to determine if variable has to be 
+   allocated in stack or in heap, it performs `escape analysis`
+   - set of rules that vairable must pass on compilation stage.
+   If it doesn't it will be allocated in heap.
 
-    Go prefers allocation on the stack — most of the allocations 
-    within a given Go program will be on the stack. It’s cheap 
-    because it only requires two CPU instructions: one to push 
-    onto the stack for allocation, and another to release from the 
-    stack.
+   Go prefers allocation on the stack — most of the allocations 
+   within a given Go program will be on the stack. It’s cheap 
+   because it only requires two CPU instructions: one to push 
+   onto the stack for allocation, and another to release from the 
+   stack.
   
-    Stack allocation requires that the lifetime and memory footprint
-    of a variable can be determined at compile time. Otherwise a 
-    dynamic allocation onto the heap occurs at runtime. `malloc` 
-    must search for a chunk of free memory large enough to hold the 
-    new value. Later down the line, the garbage collector scans the 
-    heap for objects which are no longer referenced.
+   Stack allocation requires that the lifetime and memory footprint
+   of a variable can be determined at compile time. Otherwise a 
+   dynamic allocation onto the heap occurs at runtime. `malloc` 
+   must search for a chunk of free memory large enough to hold the 
+   new value. Later down the line, the garbage collector scans the 
+   heap for objects which are no longer referenced.
 
-    The rule of thumb is: pointers point to data allocated on the heap.
-    Thus, reducing the number of pointers in a program reduces the 
-    number of heap allocations.
+   The rule of thumb is: pointers point to data allocated on the heap.
+   Thus, reducing the number of pointers in a program reduces the 
+   number of heap allocations.
+* Profile
+  There are two pprof implementations available:
+  - net/http/pprof
+  - runtime/pprof
+  OR
+  - Dave Cheney's profiler: (extremely awesome)
+    https://github.com/pkg/profile
+
+  #+begin_src go
+  import "runtime/pprof"
+
+  // somewhere in code:
+  fn := filepath.Join("cpu.pprof")
+  file, err := os.Create(fn) // create file for profiler output
+  pprof.StartCPUProfile(file) // start CPU Profiler
+  defer pprof.StopCPUProfile() // write results to the file
+  #+end_src
+
+  web view:
+  #+begin_src bash
+  $ go tool pprof -http=:8080 cpu.pprof
+  #+end_src
