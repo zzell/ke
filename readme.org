@@ -238,6 +238,82 @@
    The rule of thumb is: pointers point to data allocated on the heap.
    Thus, reducing the number of pointers in a program reduces the 
    number of heap allocations.
+** Interfaces: Interface Values, Type Assertions
+   https://research.swtch.com/interfaces
+   https://github.com/teh-cmc/go-internals/blob/master/chapter2_interfaces/README.md
+   Interface is an abstract data type, that doesn't expose the representation
+   of internal structure. When you have a value of an interface type, you know 
+   nothing about what it is, you know only what it can do. (Duck typing).
+    
+   Interface: 64bit
+   - pointer to "itable"
+     - metadata describing type
+     - type's hash for type switch (switch x.(type))
+     - flag that describes if interface is implemented
+     - list of method names and their types
+   - data: 
+     - "unsafe.Pointer" to copy of original data in heap
+        
+   If the interface type has no methods then the itable serves no purpose 
+   except to hold the pointer to the original type. In this case, the 
+   itable can be dropped and the value can point at the type directly
+
+   If the value associated with the interface value can fit in a single machine 
+   word, there's no need to introduce the indirection or the heap allocation. 
+   If we define Binary32 to be like Binary but implemented as a uint32, 
+   it could be stored in an interface value by keeping the actual value.
+    
+   Compiler calculates itabels for static interfaces at compilation phase. 
+   Dynamic allocation performs on type assertions. (Probably).
+    
+   #+begin_src go
+   // src/runtime/runtime2.go
+   type iface struct { // 16 bytes on a 64bit arch
+     tab  *itab
+     data unsafe.Pointer // copy of original data in heap
+   }
+
+   // src/runtime/runtime2.go
+   type itab struct { // 40 bytes on a 64bit arch
+     inter *interfacetype
+     // internal representation of any Go type within the runtime,
+     // describes the type of the value held by the interface.
+     _type *_type
+     hash  uint32 // copy of _type.hash. Used for type switches.
+     _     [4]byte // WTF?
+     fun   [1]uintptr // variable sized. fun[0]==0 means _type does not implement inter.
+   }
+    
+   // src/runtime/type.go
+   type interfacetype struct { // 80 bytes on a 64bit arch
+     typ     _type
+     pkgpath name
+     mhdr    []imethod
+   }
+
+   type imethod struct {
+     name nameOff
+     ityp typeOff
+   }
+   #+end_src
+ 
+   Interface values may be compared using == and !=. Two interface values are equal if both are
+   nil, or if their dynamic types are identical and their dynamic values are equal according to the
+   usual behavior of == for that type. Because interface values are comparable, they may be used
+   as the keys of a map or as the operand of a switch statement. However, if two interface values 
+   are compared and have the same dynamic type, but that type is not comparable (a slice, map or 
+   function for instance), then the comparison fails with a panic.
+    
+   A nil interface value, which contains no value at all, is not the same as an interface value 
+   containing a pointer that happens to be nil. 
+    
+   #+begin_src go
+   type xi interface{}
+   var a *string = nil
+   var x xi = a
+   fmt.Println(x == nil) // false
+   #+end_src
+
 * Profile
   There are two pprof implementations available:
   - net/http/pprof
