@@ -7,6 +7,27 @@
 
 # Design
 ## OOD
+### GoF Design Patterns
+#### Creational
+##### Singleton
+Asserts that the whole application will have single instance of certain object
+and provides global access point to that object.
+The access to the object goes through the "GetInstance" method.
+
+Just a fancy global - unsafe and has side effects, hides the dependencies of
+application in code instead of exposing them
+
+![img](https://refactoring.guru/images/patterns/diagrams/singleton/structure-en.png)
+
+```go
+func GetInstance() *Singleton {
+	once.Do(func() {
+		instance = &Singleton{}
+	})
+	return instance
+}
+```
+
 ## DB Design
 ## Modeling
 ## Security
