@@ -32,6 +32,8 @@ func GetInstance() *Singleton {
 Defines an interface that allows to create different implementations of object (interface)
 without exposing the creation logic to client.
 
+(Is there any particular reason to use that "Factory" interface with "Create" and empty structs? Constructors would make the job done pretty well.)
+
 ![img](https://refactoring.guru/images/patterns/diagrams/factory-method/structure.png)
 
 ```go
