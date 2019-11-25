@@ -28,6 +28,55 @@ func GetInstance() *Singleton {
 }
 ```
 
+##### Factory Method
+Defines an interface that allows to create different implementations of object (interface)
+without exposing the creation logic to client.
+
+![img](https://refactoring.guru/images/patterns/diagrams/factory-method/structure.png)
+
+```go
+type OAuth2 interface {
+	Authorize(creds ...string) error
+}
+
+type ClientCredentials struct{}
+func (ClientCredentials) Authorize() error { /*..*/ }
+
+type AuthCode struct{}
+func (AuthCode) Authorize() error { /*..*/ }
+
+type Password struct{}
+func (Password) Authorize() error { /*..*/ }
+
+type OAuthFactory interface {
+	Create() OAuth2
+}
+
+type OAuth2ClientCredentials struct{}
+func (OAuth2ClientCredentials) Create() OAuth2 { /*..*/ }
+
+type OAuth2AuthCode struct{}
+func (OAuth2AuthCode) Create() OAuth2 { /*..*/ }
+
+type OAuthPassword struct{}
+func (OAuthPassword) Create() OAuth2 { /*..*/ }
+
+func Authorize(method string, creds ...string) error {
+	var auth OAuth2
+
+	switch method {
+	case "client credentials":
+		auth = OAuth2ClientCredentials{}.Create()
+	case "auth code":
+		auth = OAuth2AuthCode{}.Create()
+	case "password":
+		auth = OAuthPassword{}.Create()
+	}
+
+	return auth.Authorize(creds...)
+}
+```
+
 ## DB Design
 ## Modeling
 ## Security
