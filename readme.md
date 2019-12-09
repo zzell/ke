@@ -6,7 +6,7 @@
 ## Software Requirements Engineering
 
 # Design
-## OOD
+## OOD :bulb:
 ### GoF Design Patterns
 #### Creational
 ##### Singleton
@@ -206,7 +206,7 @@ decides either to process the request or to pass it to the next handler in the c
 ## Algorithms
 
 # Core
-## Programming language
+## Programming language :bulb:
 ### Interfaces: Interface Values, Type Assertions
 https://research.swtch.com/interfaces
 https://github.com/teh-cmc/go-internals/blob/master/chapter2_interfaces/README.md
@@ -275,23 +275,23 @@ Compiler performs `escape analysis` - set of rules that variable must pass on co
 to be allocated in stack. Stack allocation requires that the lifetime and memory footprint of a
 variable can be determined at compile time.
 
-## Tools & Ecosystem
-## Go Concurrency
-## Networking
+## Tools & Ecosystem :bulb:
+## Go Concurrency :bulb:
+## Networking :bulb:
 
 # Back-End
 ## Web and Application Servers
 ## Cloud-based Deployment Services
 
 # DB
-## SQL
+## SQL :bulb:
 ## NoSQL
-## Database (practice)
+## Database (practice) :bulb:
 
 # Verification
 ## Code quality
 ## Refactoring
-## Tests, Trace, Profile
+## Tests, Trace, Profile :bulb:
 ### Benchmark
 ### Profiling concepts
 ### Profiling tools (pprof, http/pprof, profile)
