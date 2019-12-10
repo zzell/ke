@@ -275,6 +275,36 @@ Compiler performs `escape analysis` - set of rules that variable must pass on co
 to be allocated in stack. Stack allocation requires that the lifetime and memory footprint of a
 variable can be determined at compile time.
 
+### Maps
+https://github.com/golang/go/blob/master/src/runtime/map.go
+```go
+// A map is just a hash table. The data is arranged
+// into an array of buckets. Each bucket contains up to
+// 8 key/elem pairs. The low-order bits of the hash are
+// used to select a bucket. Each bucket contains a few
+// high-order bits of each hash to distinguish the entries
+// within a single bucket.
+```
+(looks like low-order bits count depends on buckets count)
+
+```go
+// A bucket for a Go map.
+type bmap struct {
+	// tophash generally contains the top byte of the hash value
+	// for each key in this bucket. If tophash[0] < minTopHash,
+	// tophash[0] is a bucket evacuation state instead.
+	tophash [bucketCnt]uint8
+	// Followed by bucketCnt keys and then bucketCnt elems.
+	// NOTE: packing all the keys together and then all the elems together makes the
+	// code a bit more complicated than alternating key/elem/key/elem/... but it allows
+	// us to eliminate padding which would be needed for, e.g., map[int64]int8.
+	// Followed by an overflow pointer.
+}
+```
+
+https://dave.cheney.net/2018/05/29/how-the-go-runtime-implements-maps-efficiently-without-generics
+> We start with the key, feed it through our hash function, then mask off the bottom few bits to get the correct offset into our bucket array. This is the bucket that will hold all the entries whose hash ends in three (011 in binary). Finally we walk down the list of entries in the bucket until we find a free slot and we insert our key and value there. If the key was already present, we’d just overwrite the value.
+
 ## Tools & Ecosystem :bulb:
 ## Go Concurrency :bulb:
 ## Networking :bulb:
