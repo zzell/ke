@@ -200,6 +200,87 @@ decides either to process the request or to pass it to the next handler in the c
 
 ![img](https://refactoring.guru/images/patterns/diagrams/chain-of-responsibility/structure.png)
 
+##### Command
+Sender -> Command -> Receiver
+
+Creates middle layer set of commands where every command represented by its own class
+with common interface. (usually with one method “Execute()”) It requires additional layer
+to bound Commands to Senders. On initialization, Command gets Receiver’s instance.
+After that command may be assigned to Sender. Sender stores a list of Commands, and methods
+to add, remove and execute them, this allows dinamically change Sender’s behavior.
+
+```
+Senders
+[] [] [] [] [] []
+    Commands
+    [] [] []
+       Receiver
+       []
+```
+
+##### Iterator
+Moves iteration logic to its own object. Allows to easily implement different iteration
+methods for COMPLEX DATA.
+
+There is usually just interface with methods like `Next()`, `HasNext()`, `GetValue()` etc.
+
+I guess Go's `sort.Interface` is pretty fits into this pattern. (But actually not really)
+
+```go
+// A type, typically a collection, that satisfies sort.Interface can be
+// sorted by the routines in this package. The methods require that the
+// elements of the collection be enumerated by an integer index.
+type Interface interface {
+	// Len is the number of elements in the collection.
+	Len() int
+	// Less reports whether the element with
+	// index i should sort before the element with index j.
+	Less(i, j int) bool
+	// Swap swaps the elements with indexes i and j.
+	Swap(i, j int)
+}
+```
+
+##### Mediator
+This one is FAAAT.
+
+The pattern restricts direct communications between the objects and forces them to collaborate only via a mediator object.
+
+Mediator contains all initialized objects that has to communicate with each other and each object contains Mediator's instance.
+
+The Mediator is about the interactions between "colleague" objects who don't know each other.
+encapsulates the interaction between several colleague objects in order to isolate them from each other.
+
+![img](https://refactoring.guru/images/patterns/diagrams/mediator/structure.png)
+
+##### Memento
+Lets save and restore the previous state of an object.
+
+![img](https://refactoring.guru/images/patterns/diagrams/memento/structure1.png)
+
+##### Observer
+Lets you define a subscription mechanism to notify multiple objects about any events that happen to the object they’re observing.
+
+![img](https://refactoring.guru/images/patterns/diagrams/observer/structure.png)
+
+##### State
+Lets an object alter its behavior when its internal state changes. It appears as if the object changed its class.
+
+There is method like `SetState(IState)` and everything method does goes through it's state.
+
+E.g phone call mode (silent, vibration, sound).
+
+##### Strategy
+Ugh the same as state.
+
+- The Strategy pattern is really about having a different implementation that accomplishes (basically) the same thing, so that one implementation can replace the other as the strategy requires. For example, you might have different sorting algorithms in a strategy pattern. The callers to the object does not change based on which strategy is being employed, but regardless of strategy the goal is the same (sort the collection).
+- The State pattern is about doing different things based on the state, while leaving the caller relieved from the burden of accommodating every possible state. So for example you might have a getStatus() method that will return different statuses based on the state of the object, but the caller of the method doesn't have to be coded differently to account for each potential state.
+
+- The Strategy pattern deals with HOW an object performs a certain task -- it encapsulates an algorithm.
+- The State pattern deals with WHAT (state or type) an object is (in) -- it encapsulates state-dependent behavior, whereas
+
+##### Template Method
+
 ## DB Design
 ## Modeling
 ## Security
@@ -285,7 +366,9 @@ https://github.com/golang/go/blob/master/src/runtime/map.go
 // high-order bits of each hash to distinguish the entries
 // within a single bucket.
 ```
-(looks like low-order bits count depends on buckets count)
+
+Default underlying array size == 8, so default LOB == 3 (2^3 = 8), as map grows
+it doubles it underlying array and increments LOB (2^4 = 16) and so on.
 
 ```go
 // A bucket for a Go map.
