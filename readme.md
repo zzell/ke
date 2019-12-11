@@ -357,6 +357,8 @@ to be allocated in stack. Stack allocation requires that the lifetime and memory
 variable can be determined at compile time.
 
 ### Maps
+https://dave.cheney.net/2018/05/29/how-the-go-runtime-implements-maps-efficiently-without-generics
+
 https://github.com/golang/go/blob/master/src/runtime/map.go
 ```go
 // A map is just a hash table. The data is arranged
@@ -384,9 +386,17 @@ type bmap struct {
 	// Followed by an overflow pointer.
 }
 ```
+**Why are they unordered?**
+- It's more efficient, runtime don't need to remember order.
+- They intentionally made it random starting with Go 1 to make developers not rely on it. Since the release of Go 1.0, the runtime has randomized map iteration order. Programmers had begun to rely on the stable iteration order of early versions of Go, which varied between implementations, leading to portability bugs. Iteration order which order may change from release-to-relase, from platform-to-platform, or may even change during a single runtime of an app when map internals change due to accommodating more elements.
+- Regarding the last point: during map growth its buckets gets reordered that would cause to different orders during runtime. Anyway, even without reordering if it would loop like `bucket -> elements -> next bucket -> elements...`, than after adding new element it would appear in the middle of order because you newer know in which bucket it will go.
 
-https://dave.cheney.net/2018/05/29/how-the-go-runtime-implements-maps-efficiently-without-generics
-> We start with the key, feed it through our hash function, then mask off the bottom few bits to get the correct offset into our bucket array. This is the bucket that will hold all the entries whose hash ends in three (011 in binary). Finally we walk down the list of entries in the bucket until we find a free slot and we insert our key and value there. If the key was already present, we’d just overwrite the value.
+**Where actual values are stored in memory?**
+The "where" is specified by hmap.buckets. This is a pointer value, it points to an array in memory, an array holding the buckets. (NOTICE: it isn't `*bmap` or `bmap` it's `unsafe.Pointer` what says that it a bit more complicated than i thought)
+
+```
+[8]tophash -> [8]key -> [8]value -> overflowpointer
+```
 
 ## Tools & Ecosystem :bulb:
 ## Go Concurrency :bulb:
