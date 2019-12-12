@@ -342,6 +342,17 @@ https://en.wikipedia.org/wiki/Anti-pattern
 
 There is ton of them..
 
+### Layered architecture
+Four isolated layers:
+
+- The presentation layer
+- The business layer
+- The persistence layer
+- The database layer
+
+The layers are closed, meaning a request must go through all layers from top to bottom.
+
+
 ## DB Design
 ## Modeling
 ## Security
