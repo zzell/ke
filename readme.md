@@ -14,11 +14,6 @@ Asserts that the whole application will have single instance of certain object
 and provides global access point to that object.
 The access to the object goes through the "GetInstance" method.
 
-Just a fancy global - unsafe and has side effects, hides the dependencies of
-application in code instead of exposing them
-
-![img](https://refactoring.guru/images/patterns/diagrams/singleton/structure-en.png)
-
 ```go
 func GetInstance() *Singleton {
 	once.Do(func() {
@@ -32,22 +27,16 @@ func GetInstance() *Singleton {
 Defines an interface (with method "Create") that allows to create different
 implementations of object (Product).
 
-![img](https://refactoring.guru/images/patterns/diagrams/factory-method/structure.png)
-
 ##### Builder
 Allows to create objects with different options. Every Builder's method
 returns Builder itself, so it's convenient to chain methods. There is
 also might be a Director - struct that contains builder and has method "Construct"
 that creates Builder's instance with predefined options, but this is optional.
 
-![img](https://refactoring.guru/images/patterns/diagrams/builder/structure.png)
-
 ##### Prototype
 Allows to copy object with it's state. Defines an interface with method "Clone"
 that returns same interface. Under the hood implementation creates new instance with
 same fields as Prototype.
-
-![img](https://refactoring.guru/images/patterns/diagrams/prototype/structure-prototype-cache.png)
 
 ##### Abstract Factory
 Just like Factory Method, AF defines an interface, but instead of single method it has
@@ -57,8 +46,6 @@ it has to be implemented in various ways (sportcar, pickup, truck).
 The main point is that end users are not aware of what exact implementation they use.
 Instead, correct concrete factory will be chosen at runtime at the initialization stage.
 The app must select the factory type depending on the configuration or the environment settings.
-
-![img](https://refactoring.guru/images/patterns/diagrams/abstract-factory/structure.png)
 
 #### Structural
 ##### Adapter
@@ -81,17 +68,16 @@ type Target interface {
 }
 
 // Adaptee implements system to be adapted.
-type Adaptee struct {
+type Adaptee struct {}
+
+// SpecificRequest implementation.
+func (a *Adaptee) SpecificRequest() string {
+	return "Request"
 }
 
 // NewAdapter is the Adapter constructor.
 func NewAdapter(adaptee *Adaptee) Target {
 	return &Adapter{adaptee}
-}
-
-// SpecificRequest implementation.
-func (a *Adaptee) SpecificRequest() string {
-	return "Request"
 }
 
 // Adapter implements Target interface and is an adapter.
@@ -105,9 +91,6 @@ func (a *Adapter) Request() string {
 }
 ```
 
-![img](https://refactoring.guru/images/patterns/diagrams/adapter/structure-object-adapter.png)
-![img](https://refactoring.guru/images/patterns/diagrams/adapter/structure-class-adapter.png)
-
 ##### Bridge
 Mockery
 Lets split a large class or a set of closely related classes into separate
@@ -115,8 +98,6 @@ hierarchies-abstraction and implementation which can be developed independently 
 
 Structure contains different objects over composition and interacts with them. Use the pattern
 when you need to extend a class in several orthogonal (independent) dimensions.
-
-![img](https://refactoring.guru/images/patterns/diagrams/bridge/structure-en.png)
 
 ##### Composite
 Filetree.
@@ -151,8 +132,6 @@ func (c CompressionDecorator) Write(p []byte) (n int, err error) {
 }
 ```
 
-![img](https://refactoring.guru/images/patterns/diagrams/decorator/structure.png)
-
 ##### Proxy
 Proxy intercepts calls to the real object before or after and can extend, perform validation, cache etc.
 Similar to decorator, but Decorator get reference for decorated object (usually through constructor)
@@ -176,8 +155,6 @@ func (c CompressionProxy) Write(p []byte) (n int, err error) {
 }
 ```
 
-![img](https://refactoring.guru/images/patterns/diagrams/proxy/structure.png)
-
 ##### Facade
 Incapsulation of complex staff (hierarchy) behind simple interface.
 
@@ -192,13 +169,11 @@ will get it from that array.
 
 #### Behavioral
 ##### Chan of responisibility
-lets pass requests along a chain of handlers. Upon receiving a request, each handler
+Allows pass requests along a chain of handlers. Upon receiving a request, each handler
 decides either to process the request or to pass it to the next handler in the chain.
 
 - If one part of chain fails, no further processing performs.
 - Different way - stop processing on success.
-
-![img](https://refactoring.guru/images/patterns/diagrams/chain-of-responsibility/structure.png)
 
 ##### Command
 Sender -> Command -> Receiver
@@ -254,14 +229,12 @@ encapsulates the interaction between several colleague objects in order to isola
 ![img](https://refactoring.guru/images/patterns/diagrams/mediator/structure.png)
 
 ##### Memento
-Lets save and restore the previous state of an object.
+UNDO
 
-![img](https://refactoring.guru/images/patterns/diagrams/memento/structure1.png)
+Lets save and restore the previous state of an object.
 
 ##### Observer
 Lets you define a subscription mechanism to notify multiple objects about any events that happen to the object they’re observing.
-
-![img](https://refactoring.guru/images/patterns/diagrams/observer/structure.png)
 
 ##### State
 Lets an object alter its behavior when its internal state changes. It appears as if the object changed its class.
@@ -272,6 +245,8 @@ E.g phone call mode (silent, vibration, sound).
 
 ##### Strategy
 Ugh the same as state.
+
+But you are changing implementation.
 
 - The Strategy pattern is really about having a different implementation that accomplishes (basically) the same thing, so that one implementation can replace the other as the strategy requires. For example, you might have different sorting algorithms in a strategy pattern. The callers to the object does not change based on which strategy is being employed, but regardless of strategy the goal is the same (sort the collection).
 - The State pattern is about doing different things based on the state, while leaving the caller relieved from the burden of accommodating every possible state. So for example you might have a getStatus() method that will return different statuses based on the state of the object, but the caller of the method doesn't have to be coded differently to account for each potential state.
