@@ -290,6 +290,49 @@ func main() {
 }
 ```
 
+### SOLID
+#### SRP: The Single Responsibility Principle
+- A module should be responsible to one, and only one, actor.
+- Old: A module should have one, and only one, reason to change.
+
+One class should solve only one problem.
+
+#### OCP: The Open Closed Principle
+- A software artifact should be open for extension but closed for modification.
+- Old: You should be able to extend a classes behavior, without modifying it.
+
+Module declares only interface WITHOUT realiztion. Realization defined in other module.
+Thus you are able to use different realization without recompilcation.
+
+And when you'll need to change behaviour you can just implement another interface.
+
+```go
+type GetInfo interface {
+    Get()
+}
+
+type GetInfoFrom3rdPartyAPI struct {}
+type GetInfoFromDatabase struct {}
+type GetInfoFromCache struct {}
+```
+
+#### LSP: The Liskov Substitution Principle
+Any interface's realization should be interchengeable in any place.
+
+#### ISP: The Interface Segregation Principle
+**Interfaces granularity**
+
+Don't force clients to implement interface they don't use.
+
+#### DIP: The Dependency Inversion Principle
+- Depend on abstractions, not on concretions.
+
+- Модули верхних уровней не должны зависеть от модулей нижних уровней. Оба типа модулей должны зависеть от абстракций.
+- Абстракции не должны зависеть от деталей. Детали должны зависеть от абстракций.
+(pohuy)
+
+
+
 ## DB Design
 ## Modeling
 ## Security
