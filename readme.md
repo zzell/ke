@@ -280,6 +280,40 @@ Ugh the same as state.
 - The State pattern deals with WHAT (state or type) an object is (in) -- it encapsulates state-dependent behavior, whereas
 
 ##### Template Method
+Defines interface. Defines base struct with methods common for all objects that implements that interface.
+Every method overrides SOME of the methods (that should differ).
+
+##### Visitor
+You have bunch of objects with common interface. Each object need to get one more method but without changing actual class.
+You define Visitor interface that have additional method for each object. Then you define method
+Accept(Visitor) for each class (yep, you actually changing it). And each Accept just calls the method it needs.
+
+```go
+type Visitor interface {
+	VisitSquare()
+	VisitSircle()
+}
+
+type Shape interface {
+	Accept(Visitor)
+}
+
+type Square struct{}
+func (s Square) Accept(v Visitor) {
+	v.VisitSquare()
+}
+
+type Sircle struct{}
+func (s Sircle) Accept(v Visitor) {
+	v.VisitSircle()
+}
+
+func main() {
+	var v = new(Visitor) // here must be implementation instead of interface
+	var s = new(Square)
+	s.Accept(v)
+}
+```
 
 ## DB Design
 ## Modeling
