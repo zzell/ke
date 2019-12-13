@@ -331,7 +331,16 @@ Don't force clients to implement interface they don't use.
 - Абстракции не должны зависеть от деталей. Детали должны зависеть от абстракций.
 (pohuy)
 
+### Anti patterns
+https://en.wikipedia.org/wiki/Anti-pattern
+- magic ints
+- hardcode
+- repeating
+- globals
+- circular dependencies
+- spagetti code
 
+There is ton of them..
 
 ## DB Design
 ## Modeling
