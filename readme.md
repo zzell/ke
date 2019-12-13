@@ -459,6 +459,10 @@ The "where" is specified by hmap.buckets. This is a pointer value, it points to 
 [8]tophash -> [8]key -> [8]value -> overflowpointer
 ```
 
+### High ordered functions
+A Higher-Order function is a function that receives a function as an argument or returns the function as output.
+Higher order functions are functions that operate on other functions, either by taking them as arguments or by returning them.
+
 ## Tools & Ecosystem :bulb:
 ## Go Concurrency :bulb:
 ## Networking :bulb:
