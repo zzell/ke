@@ -474,6 +474,39 @@ The "where" is specified by hmap.buckets. This is a pointer value, it points to 
 A Higher-Order function is a function that receives a function as an argument or returns the function as output.
 Higher order functions are functions that operate on other functions, either by taking them as arguments or by returning them.
 
+### Channels
+```go
+type hchan struct {
+	qcount   uint           // total data in the queue
+	dataqsiz uint           // size of the circular queue
+	buf      unsafe.Pointer // points to an array of dataqsiz elements
+	elemsize uint16
+	closed   uint32
+	elemtype *_type // element type
+	sendx    uint   // send index
+	recvx    uint   // receive index
+	recvq    waitq  // list of recv waiters
+	sendq    waitq  // list of send waiters
+	lock     mutex
+}
+```
+
+`buf` - array with size
+`closed` - flag
+`lock` - embedded structure
+`send` and `recvq` - sudog sudog represents a g in a wait list, such as for
+sending/receiving on a channel.
+
+```go
+// allocates hchan in heap
+func makechan(t *chantype, size int64) *hchan {/*...*/}
+```
+
+`makechan` returns pointer to channel, so it's possible to pass them as it is.
+
+While send and receive operations it acquires a lock, performs operations under `buf` array
+and releases the lock.
+
 ## Tools & Ecosystem :bulb:
 ## Go Concurrency :bulb:
 ## Networking :bulb:
