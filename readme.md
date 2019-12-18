@@ -507,6 +507,27 @@ func makechan(t *chantype, size int64) *hchan {/*...*/}
 While send and receive operations it acquires a lock, performs operations under `buf` array
 and releases the lock.
 
+### Reflection: Rules of usage, reflect.Type, reflect.Value, Struct tags
+https://blog.golang.org/laws-of-reflection
+
+Reflection in computing is the ability of a program to examine its own structure, particularly through types.
+A variable of interface type stores a pair: the concrete value assigned to the variable, and that value's type descriptor. To be more precise, the value is the underlying concrete data item that implements the interface and the type describes the full type of that item.
+
+```go
+func TypeOf(i interface{}) Type
+func ValueOf(i interface{}) Value
+```
+`reflect.Type` and `reflect.Value` are interfaces describing type and value of interface.
+Theese two are just examining interface's descriptor `itab *itable` to find out the undelying type and it's value.
+Passing non-interface value to theese function just converts them to empty `interface{}` and then does the job.
+
+https://github.com/golang/go/blob/master/src/reflect/type.go
+
+1) Reflection goes from interface value to reflection object.
+2) Reflection goes from reflection object to interface value.
+3) To modify a reflection object, the value must be settable.
+Settable value - pointer value.
+
 ## Tools & Ecosystem :bulb:
 ## Go Concurrency :bulb:
 ## Networking :bulb:
