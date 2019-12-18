@@ -537,6 +537,78 @@ Pattern bridge.
 
 Dependency injection (DI) is a style of writing code such that the dependencies of a particular object (or, in go, a struct) are provided at the time the object is initialized. Object is not responsible to initialize dependencies.
 
+### io.Reader, io.Writer, sort.Interface, error interfaces
+https://github.com/golang/go/blob/master/src/io/io.go
+```go
+// Read reads up to len(p) bytes into p. It returns the number of bytes
+// read (0 <= n <= len(p)) and any error encountered. Even if Read
+// returns n < len(p), it may use all of p as scratch space during the call.
+// If some data is available but not len(p) bytes, Read conventionally
+// returns what is available instead of waiting for more.
+type Reader interface {
+	Read(p []byte) (n int, err error)
+}
+
+// Write writes len(p) bytes from p to the underlying data stream.
+// It returns the number of bytes written from p (0 <= n <= len(p))
+// and any error encountered that caused the write to stop early.
+// Write must return a non-nil error if it returns n < len(p).
+// Write must not modify the slice data, even temporarily.
+//
+// Implementations must not retain p.
+type Writer interface {
+	Write(p []byte) (n int, err error)
+}
+```
+
+https://github.com/golang/go/blob/master/src/sort/sort.go
+```go
+// A type, typically a collection, that satisfies sort.Interface can be
+// sorted by the routines in this package. The methods require that the
+// elements of the collection be enumerated by an integer index.
+type Interface interface {
+	// Len is the number of elements in the collection.
+	Len() int
+	// Less reports whether the element with
+	// index i should sort before the element with index j.
+	Less(i, j int) bool
+	// Swap swaps the elements with indexes i and j.
+	Swap(i, j int)
+}
+```
+
+Errors:
+```go
+type error interface {
+    Error() string
+}
+```
+
+### Env variables
+```go
+func Getenv(key string) string
+```
+```go
+func Setenv(key, value string) error
+```
+
+### System processes: spawning and terminating, collecting output
+https://github.com/golang/go/blob/master/src/os/exec/exec.go
+```go
+func main() {
+	cmd := exec.Command("ps", "aux") // create cmd
+	_ = cmd.Start()                  // start process
+
+	in, _ := cmd.StdinPipe()   // to write input
+	out, _ := cmd.StdoutPipe() // to read output
+
+	defer in.Close()
+	defer out.Close()
+
+	_ = cmd.Wait() // wait until cmd is done
+}
+```
+
 ## Tools & Ecosystem :bulb:
 ## Go Concurrency :bulb:
 ## Networking :bulb:
