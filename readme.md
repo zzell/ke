@@ -663,6 +663,9 @@ doSomethingForAWhile()
 ```
 
 ## Tools & Ecosystem :bulb:
+### Escape analysis
+`go run -gcflags '-m' main.go` - shows escape analysis details
+
 ## Go Concurrency :bulb:
 ## Networking :bulb:
 
