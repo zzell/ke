@@ -609,6 +609,59 @@ func main() {
 }
 ```
 
+### Effective go notes
+- Go doesn't provide automatic support for getters and setters. There's nothing wrong with providing getters and setters yourself, and it's often appropriate to do so, but it's neither idiomatic nor necessary to put Get into the getter's name. If you have a field called owner (lower case, unexported), the getter method should be called Owner (upper case, exported), not GetOwner. The use of upper-case names for export provides the hook to discriminate the field from the method. A setter function, if needed, will likely be called SetOwner. Both names read well in practice:
+
+```go
+owner := obj.Owner()
+if owner != user {
+    obj.SetOwner(user)
+}
+```
+(getters without `Get-`, but setters with `Set-`)
+
+- By convention, one-method interfaces are named by the method name plus an -er suffix or similar modification to construct an agent noun: Reader, Writer, Formatter, CloseNotifier etc.
+
+- Switches has `break`
+
+- Last defer executes first
+```go
+for i := 0; i < 5; i++ {
+    defer fmt.Printf("%d ", i)
+}
+// prints 4, 3, 2, 1
+```
+
+- Arguments to deferred functions are evaluated when the defer executes.
+```go
+func main() {
+	var x = 10
+	defer fmt.Println(x)
+	x = 20
+}
+
+// prints 10
+```
+
+- If a type exists only to implement an interface and will never have exported methods beyond that interface, there is no need to export the type itself.
+
+- Import for side effects `import _ "net/http/pprof"` e.g. for it's init function.
+
+- Do not communicate by sharing memory; instead, share memory by communicating.
+One way to think about this model is to consider a typical single-threaded program running on one CPU. It has no need for synchronization primitives. Now run another such instance; it too needs no synchronization. Now let those two communicate; if the communication is the synchronizer, there's still no need for other synchronization. Unix pipelines, for example, fit this model perfectly.
+
+- Just nice peace of code
+```go
+c := make(chan int)  // Allocate a channel.
+// Start the sort in a goroutine; when it completes, signal on the channel.
+go func() {
+    list.Sort()
+    c <- 1  // Send a signal; value does not matter.
+}()
+doSomethingForAWhile()
+<-c   // Wait for sort to finish; discard sent value.
+```
+
 ## Tools & Ecosystem :bulb:
 ## Go Concurrency :bulb:
 ## Networking :bulb:
