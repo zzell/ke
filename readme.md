@@ -92,7 +92,8 @@ func (a *Adapter) Request() string {
 ```
 
 ##### Bridge
-Mockery
+Dependencie injection.
+
 Lets split a large class or a set of closely related classes into separate
 hierarchies-abstraction and implementation which can be developed independently of each other.
 
@@ -527,6 +528,14 @@ https://github.com/golang/go/blob/master/src/reflect/type.go
 2) Reflection goes from reflection object to interface value.
 3) To modify a reflection object, the value must be settable.
 Settable value - pointer value.
+
+### Blank identifier
+`_` place holder where value is not needed.
+
+### Dependencie injection
+Pattern bridge.
+
+Dependency injection (DI) is a style of writing code such that the dependencies of a particular object (or, in go, a struct) are provided at the time the object is initialized. Object is not responsible to initialize dependencies.
 
 ## Tools & Ecosystem :bulb:
 ## Go Concurrency :bulb:
