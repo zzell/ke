@@ -577,7 +577,7 @@ type Interface interface {
 }
 ```
 
-Errors:
+### Errors:
 ```go
 type error interface {
     Error() string
