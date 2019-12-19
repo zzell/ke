@@ -667,6 +667,32 @@ doSomethingForAWhile()
 `go run -gcflags '-m' main.go` - shows escape analysis details
 
 ## Go Concurrency :bulb:
+### WaitGroup
+https://github.com/golang/go/blob/master/src/sync/waitgroup.go
+`sync.WaitGroup (struct)`
+
+```go
+wg.Add(1)
+wg.Done()
+wg.Wait()
+```
+
+### Shared Memory
+In computer science, shared memory is memory that may be simultaneously accessed by multiple programs with an intent to provide communication among them or avoid redundant copies. Shared memory is an efficient means of passing data between programs. Depending on context, programs may run on a single processor or on multiple separate processors.
+
+Using memory for communication inside a single program, e.g. among its multiple threads, is also referred to as shared memory.
+
+### Race Detector (Memory synchronization, Lazy initialisation)
+https://blog.golang.org/race-detector
+
+Race conditions are among the most insidious and elusive programming errors. They typically cause erratic and mysterious failures, often long after the code has been deployed to production. While Go's concurrency mechanisms make it easy to write clean concurrent code, they don't prevent race conditions. Care, diligence, and testing are required. And tools can help.
+
+The race detector is based on the C/C++ ThreadSanitizer runtime library, which has been used to detect many errors in Google's internal code base and in Chromium. The technology was integrated with Go in September 2012; since then it has detected 42 races in the standard library. It is now part of our continuous build process, where it continues to catch race conditions as they arise.
+
+- memory sync:
+> an unsynchronized read and write of the variable t from different goroutines.
+that's the race condition^ and should be avoided
+
 ## Networking :bulb:
 
 # Back-End
