@@ -693,6 +693,29 @@ The race detector is based on the C/C++ ThreadSanitizer runtime library, which h
 > an unsynchronized read and write of the variable t from different goroutines.
 that's the race condition^ and should be avoided
 
+### Concurrent vs Parallel 
+Concurency is about dealing with few things at once.
+It's how programm is built.
+E.g. perform operations while access ext resource like http, i/o, syscall.
+
+Parallelism is about performing simultaneous independently.
+
+### Timeouts
+```go
+select {
+  case err := <-c:
+    // use err and reply
+  case <-time.After(timeoutNanoseconds):
+    // call timed out
+}
+```
+
+### Concurrency patterns
+TODO: https://sudo.ch/unizh/concurrencypatterns/ConcurrencyPatterns.pdf
+
+### Go concurrency patterns
+https://blog.golang.org/pipelines
+
 ## Networking :bulb:
 
 # Back-End
