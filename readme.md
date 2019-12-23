@@ -716,6 +716,176 @@ TODO: https://sudo.ch/unizh/concurrencypatterns/ConcurrencyPatterns.pdf
 ### Go concurrency patterns
 https://blog.golang.org/pipelines
 
+#### Pipelines
+Informally, a pipeline is a series of stages connected by channels, where each stage is a group of goroutines running the same function. In each stage, the goroutines
+- receive values from upstream via inbound channels
+- perform some function on that data, usually producing new values
+- send values downstream via outbound channels
+
+```go
+// this function is cool, because it produces a channel, so the work may be distributed between few goroutines easily.
+func gen(nums ...int) <-chan int {
+    out := make(chan int)
+    go func() {
+        for _, n := range nums {
+            out <- n
+        }
+        close(out)
+    }()
+    return out
+}
+
+func sq(in <-chan int) <-chan int {
+    out := make(chan int)
+    go func() {
+        for n := range in {
+            out <- n * n
+        }
+        close(out)
+    }()
+    return out
+}
+
+func main() {
+    // Set up the pipeline and consume the output.
+    for n := range sq(sq(gen(2, 3))) {
+        fmt.Println(n) // 16 then 81
+    }
+}
+```
+
+#### Cancellaction
+When main decides to exit without receiving all the values from out, it must tell the goroutines in the upstream stages to abandon the values they're trying to send.
+
+1) Additional channel done that will be closed when receiver don't need values
+2) Context `Cancel()` `Done()`
+
+```go
+for n := range c {
+	select {
+	case out <- n: // write to chan
+	case <-done:   // receive from done
+		return
+	}
+}
+```
+
+#### Subscription
+Pretty simple to first step from pipeline.
+Kinda useless pattern, but the main idea is next:
+
+- function `Subscribe(Resource) Subscription`
+- `Resource` interface responsible to produce `items` (might be usual `database/sql` query result)
+- `Subscription` - interface with method `Updates() chan items` and `Close()`
+
+`Subscribe` function starts goroutine under the hood that writes to `Subscription`'s internal channel. So that logic is hidden behind "simple" `Subscription` interface.
+
+#### Ping-pong
+Even more useless than subscription.
+
+Create two channels `ping` and `pong` (unexpected), then start two goroutines `pinger` and `ponger` that receive ping and pong, each goroutine starts endless loop where reads from `ping` does something and writes to `pong` and vice versa.
+
+#### Fan-out
+Multiple functions can read from the same channel until that channel is closed; this is called fan-out.
+
+#### Fan-in
+A function can read from multiple inputs and proceed until all are closed by multiplexing the input channels onto a single channel that's closed when all the inputs are closed. This is called fan-in.
+
+- Distribute work between few pipelines, then merge the output (in goroutine) and return resulting channel.
+Nice peace of code
+```go
+func merge(cs ...<-chan int) <-chan int {
+    var wg sync.WaitGroup
+    out := make(chan int)
+
+    // Start an output goroutine for each input channel in cs.  output
+    // copies values from c to out until c is closed, then calls wg.Done.
+    output := func(c <-chan int) {
+        for n := range c {
+            out <- n
+        }
+        wg.Done()
+    }
+    wg.Add(len(cs))
+    for _, c := range cs {
+        go output(c)
+    }
+
+    // Start a goroutine to close out once all the output goroutines are
+    // done.  This must start after the wg.Add call.
+    go func() {
+        wg.Wait()
+        close(out)
+    }()
+    return out
+}
+```
+
+#### Workers
+Nice and simple
+
+- function `worker(jobs, results chan interface{})`
+- start few workers (GOMAXPOC as an option)
+- send to `jobs`
+
+Actually it's extremely simple to pipelines, but pipelines return resulting channel rather then receive it.
+
+#### Parallel for-loop
+Like this:
+(weird example since that isn't semapthore)
+
+```go
+type empty {}
+
+data := make([]float, N);
+res := make([]float, N);
+sem := make(chan empty, N);  // semaphore pattern
+
+for i,xi := range data {
+    go func (i int, xi float) {
+        res[i] = doSomething(i,xi);
+        sem <- empty{};
+    } (i, xi);
+}
+// wait for goroutines to finish
+for i := 0; i < N; ++i { <-sem }
+```
+
+#### Semaphore
+```go
+func do(jobs []job) error {
+	var (
+		wg   sync.WaitGroup
+		sem  = make(chan int, runtime.NumCPU()) // create semaphore with buffer size
+		errs = make(chan error)                 // non-buffered
+	)
+
+	for _, j := range jobs {
+		wg.Add(1)
+
+		go func(j job) {
+			sem <- 1 // write to sem
+
+			err := doSomething(j)
+			if err != nil {
+				select {
+				case errs <- err:
+				default:
+				}
+			}
+
+			<-sem // release sem
+			wg.Done()
+		}(j)
+	}
+
+	wg.Wait()   // wait
+	close(errs) // close errs - needed if there is no errors
+
+	return <-errs // first error from errs
+}
+```
+
 ## Networking :bulb:
 
 # Back-End
