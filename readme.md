@@ -887,6 +887,45 @@ func do(jobs []job) error {
 ```
 
 ## Networking :bulb:
+### TCP/IP
+Transmission control protocol
+
+TCP/IP is a system (or suite) of protocols, and a protocol is a system of rules and procedures. The TCP/IP protocol system is divided into separate components that theoretically function independently from one another. Each component is responsible for a piece of the communication process.
+
+Because of TCP/IP’s modular design, a vendor such as Microsoft does not have to build a completely different software package for TCP/IP on an optical-fiber network (as opposed to TCP/IP on an ordinary ethernet network). The upper layers are not affected by the different physical architecture; only the Network Access layer must change.
+
+```
+|----------------------+--------------------|
+|                      | Application Layer  |
+| Application Layer    | Presentation Layer |
+|                      | Session Layer      |
+|----------------------+--------------------|
+| Transport Layer      | Transport Layer    |
+|----------------------+--------------------|
+| Internet Layer       | Network Layer      |
+|----------------------+--------------------|
+| Network Access Layer | Data Link Layer    |
+|                      | Physical Layer     |
+|----------------------+--------------------|
+       TCP/IP                   OSI
+```
+
+- Physical layer: Converts the data into the stream of electric or analog pulses that will actually cross the transmission medium and oversees the transmission of the data; Provides an interface with the physical network. Formats the data for the transmission medium and addresses data for the subnet based on physical hardware addresses.
+- Data Link layer: Provides an interface with the network adapter; maintains
+logical links for the subnet
+- Network layer: Supports logical addressing and routing
+- Transport layer: Provides error control and flow control for the internetwork **TCP or UDP**
+- Session layer: Establishes sessions between communicating applications on the communicating computers
+- Presentation layer: Translates data to a standard format; manages encryption and data compression
+- Application layer: Provides a network interface for applications; supports
+network applications for file transfer, communications, and so forth
+
+The data passes through all layers from top to down (or vice-versa when consuming), every layer adds some headers to data, and these headers are important on the next layer.
+
+### UDP
+User datagram protocol. (faster but not reliable)
+- does not establish a session.
+- does not garantee data delivering.
 
 # Back-End
 ## Web and Application Servers
