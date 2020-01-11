@@ -961,7 +961,112 @@ Hierarchical and decentralized naming system for computers, services, or other r
 ## Cloud-based Deployment Services
 
 # DB
-## SQL :bulb:
+## SQL Structured query langugae :bulb:
+### Tables, relationships, keys, constraints 
+Primary key - is **unique** column (or set of columns) that is used to identify each row in the table. If primary key contains from few columns - the may not be unique, but the set of columns has to.
+Foreign key - the column or set of columns used to establish link between tables. It holds another's tables primary key.
+
+Relationships:
+- one to one
+- one to many
+- many to many
+
+### DDL, DML, DCL
+
+- DML is abbreviation of Data Manipulation Language. It is used to retrieve, store, modify, delete, insert and update data in database.
+SELECT – Retrieves data from a table
+INSERT -  Inserts data into a table
+UPDATE – Updates existing data into a table
+DELETE – Deletes all records from a table
+
+- DDL is abbreviation of Data Definition Language. It is used to create and modify the structure of database objects in database.
+CREATE – Creates objects in the database
+ALTER – Alters objects of the database
+DROP – Deletes objects of the database
+TRUNCATE – Deletes all records from a table and resets table identity to initial value.
+
+- DCL is abbreviation of Data Control Language. It is used to create roles, permissions, and referential integrity as well it is used to control access to database by securing it.
+GRANT – Gives user's access privileges to database
+REVOKE – Withdraws user's access privileges to database given with the GRANT command
+
+- TCL is abbreviation of Transactional Control Language. It is used to manage different transactions occurring within a database.
+COMMIT – Saves work done in transactions
+ROLLBACK – Restores database to original state since the last COMMIT command in transactions
+SAVE TRANSACTION – Sets a savepoint within a transaction
+
+### Data types (postgres)
+https://www.postgresql.org/docs/9.5/datatype.html + Composite
+
+### Operators, functions
+https://www.w3schools.com/sql/sql_operators.asp
+http://www-db.deis.unibo.it/courses/TW/DOCS/w3schools/sql/sql_functions.asp.html
+
+### Joins
+https://www.w3schools.com/sql/sql_join.asp
+
+```sql
+SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
+FROM Orders
+INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID; # attach customer row if o.customerID == c.CustomerID
+```
+
+### GROUP BY
+https://www.w3schools.com/sql/sql_groupby.asp
+```
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country; # count how many customers leaves in each country
+                  # without it it would just count all of the customers.
+```
+
+### UNION
+https://www.w3schools.com/sql/sql_union.asp
+Combines the result of few SELECT statements.
+
+### Creating, modifying, removing database objects
+- DROP DATABASE name;
+- CREATE DATABASE name;
+TODO: modify?
+
+### SESSION
+Interaction between database server and client.
+```sql
+CONNECT user@database
+```
+
+### TRANSACTION
+Ensures that all operations within the work unit are completed successfully. Otherwise, the transaction is aborted at the point of failure and all the previous operations are rolled back to their former state.
+
+- START TRANSACTION or BEGIN start a new transaction.
+- COMMIT − to save the changes.
+- ROLLBACK − to roll back the changes.
+- SAVEPOINT − creates points within the groups of transactions in which to ROLLBACK.
+- SET TRANSACTION − Places a name on a transaction.
+
+### LOCK
+There are two kinds of locks - READ|WRITE.
+```sql
+LOCK TABLES table_name [READ | WRITE]
+```
+
+A READ|WRITE locks has the following features:
+- The only session that holds the lock of a table can read/write data from the table.
+- Other sessions cannot read data from and write data to the table until the WRITE lock is released.
+
+### ISOLATION LEVELS
+Thats all about concurrent reads/writers, e.g. what datbase should do if there is dirty write (uncommited) and you access same data?
+
+https://www.geeksforgeeks.org/transaction-isolation-levels-dbms/
+
+- dirty reads - read data while another transaction.
+- non-repeatable reads - read data few times in single transaction, but another transaction is commited update between reads.
+- phantom reads - same as above, but another tr commits adding new row. 
+
+- **Read uncommitted** permits dirty reads, non repeatable reads and phantom reads.
+- **Read committed** permits non repeatable reads and phantom reads.
+- **Repeatable read** permits only phantom reads.
+- **Serializable** does not permit any read errors.
+
 ## NoSQL
 ## Database (practice) :bulb:
 
