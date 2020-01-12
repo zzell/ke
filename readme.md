@@ -1067,8 +1067,65 @@ https://www.geeksforgeeks.org/transaction-isolation-levels-dbms/
 - **Repeatable read** permits only phantom reads.
 - **Serializable** does not permit any read errors.
 
+### Stored procedure
+A stored procedure is a prepared SQL code that you can save, so the code can be reused over and over again. So if you have an SQL query that you write over and over again, save it as a stored procedure, and then just call it to execute it. You can also pass parameters to a stored procedure, so that the stored procedure can act based on the parameter value(s) that is passed.
+
+```sql
+CREATE PROCEDURE SelectAllCustomers @City nvarchar(30)
+AS
+SELECT * FROM Customers WHERE City = @City
+GO;
+
+# usage:
+EXEC SelectAllCustomers @City = "London";
+```
+
+### User-defined functions
+These are almost like procedures, but a bit different.
+https://intellipaat.com/community/3394/function-vs-stored-procedure-in-sql-server
+
+### Triggers
+Performs operation on data. Fires on event or interval.
+```sql
+CREATE TRIGGER ins_sum BEFORE INSERT ON account
+FOR EACH ROW SET @sum = @sum + NEW.amount;
+```
+
+### Cursor
+Allows to process each row of data in stored procedure or function.
+https://www.techonthenet.com/mysql/cursors/declare.php
+
 ## NoSQL
 ## Database (practice) :bulb:
+### Persistance
+Ability to save state of process without saving a process (e.g. in file).
+
+### Connection with DB
+```go
+import (
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql" // driver
+)
+
+func main() {
+	db, err := sql.Open("mysql",
+		"user:password@tcp(127.0.0.1:3306)/hello")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+}
+```
+### Transaction [Dupicate]
+https://www.tutorialspoint.com/sql/sql-transactions.htm
+
+### Data Models
+TODO
+
+Database management system (DBMS), is a computer program that interacts with a database.
+ACID (atomicity, consistency, isolation, durability) is a set of properties of database transactions intended to guarantee validity even in the event of errors, power failures, etc. 
+CAP theorem:
+In a distributed system, managing consistency(C), availability(A) and partition toleration(P).
 
 # Verification
 ## Code quality
