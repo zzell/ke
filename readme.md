@@ -1152,6 +1152,12 @@ Web view:
 ``` shell
 go tool pprof -http=:8080 cpu.pprof
 ```
+### Race conditions
+https://blog.golang.org/race-detector
+
+```go
+go run -race main.go # will run race detector. same for build, get, test and install
+```
 
 # Configuration Management
 ## Product builds and Continuous Integration
