@@ -1,31 +1,23 @@
-# Engineering Management
-## Process Planning (SDLC)
-## Estimation
-
-# Requirements
-## Software Requirements Engineering
-
 # Design
-## OOD :bulb:
+## OOD
 ### GoF Design Patterns
 #### Creational
 ##### Singleton
 Asserts that the whole application will have single instance of certain object
-and provides global access point to that object.
-The access to the object goes through the "GetInstance" method.
-
-```go
-func GetInstance() *Singleton {
-	once.Do(func() {
-		instance = &Singleton{}
-	})
-	return instance
-}
-```
+and provides global access point to that object. The access to the object goes 
+through the "GetInstance" method.
 
 ##### Factory Method
 Defines an interface (with method "Create") that allows to create different
-implementations of object (Product).
+implementations of object.
+
+##### Abstract Factory
+Defines an interface with bunch of methods like `CreateCarcass`, `CreateEngine`,
+`CreateWheels`, it can be implemented in various ways (sportcar, pickup, truck). \
+The main point is that end users are not aware of what exact implementation they use.
+Instead, correct concrete factory will be chosen at runtime at the initialization stage.
+The app must select the factory type depending on the configuration or the environment settings.
+(e.g. when writing GUI application choose btw `WinWindow`, `MacWindow`, `GnomeWindow`)
 
 ##### Builder
 Allows to create objects with different options. Every Builder's method
@@ -38,28 +30,18 @@ Allows to copy object with it's state. Defines an interface with method "Clone"
 that returns same interface. Under the hood implementation creates new instance with
 same fields as Prototype.
 
-##### Abstract Factory
-Just like Factory Method, AF defines an interface, but instead of single method it has
-bunch of methods like "CreateCarcass", "CreateEngine", "CreateWheel" of course
-it has to be implemented in various ways (sportcar, pickup, truck).
-
-The main point is that end users are not aware of what exact implementation they use.
-Instead, correct concrete factory will be chosen at runtime at the initialization stage.
-The app must select the factory type depending on the configuration or the environment settings.
-
 #### Structural
 ##### Adapter
-The main point: it transforms object of one type to another.
+TODO: too fuzzy
 
-Adapter doesn't have any strict form (interface or something). And can be implemented
-in various ways.
+Transforms object of one type to another. Adapter doesn't have any strict 
+form (interface or something) and can be implemented in various ways.
 
-E.g it might be a struct that contains existing and target objects via composition
-and owerrides target object's methods, after that access to the target performs through
+- Struct that contains existing and target objects via composition
+and overrides target object's methods, then access to the target performs through
 that struct.
-
-Can be a struct that implements target interface and contains existing. (most popular)
-Can be a simple function that accepts existing and returns target.
+- Can be a struct that implements target interface and contains existing. (most popular)
+- Can be a simple function that accepts existing and returns target.
 
 ```go
 // Target provides an interface with which the system should work.
@@ -92,16 +74,14 @@ func (a *Adapter) Request() string {
 ```
 
 ##### Bridge
-Dependencie injection.
-
+**Dependency injection.** \
 Lets split a large class or a set of closely related classes into separate
 hierarchies-abstraction and implementation which can be developed independently of each other.
-
-Structure contains different objects over composition and interacts with them. Use the pattern
+Resulting structure contains different objects over composition and interacts with them. Use the pattern
 when you need to extend a class in several orthogonal (independent) dimensions.
 
 ##### Composite
-Filetree.
+**Filetree-like** \
 Fuck you composite
 
 ```go
@@ -115,8 +95,8 @@ type Component interface {
 ```
 
 ##### Decorator
-Lets attach new behaviors to objects
-by placing these objects inside special wrapper objects that contain the behaviors
+Lets attach new behaviors to objects by placing these objects inside the special 
+wrapper object that contains behavior.
 
 ```go
 // implements io.Writer
@@ -126,6 +106,7 @@ func (TransportWriter) Write(p []byte) (n int, err error) { /*...*/ }
 func NewCompressionWriter(w io.Writer) io.Writer {
 	return CompressionDecorator{w}
 }
+
 type CompressionDecorator struct{ writer io.Writer }
 func (c CompressionDecorator) Write(p []byte) (n int, err error) {
 	// compress than write
@@ -135,8 +116,8 @@ func (c CompressionDecorator) Write(p []byte) (n int, err error) {
 
 ##### Proxy
 Proxy intercepts calls to the real object before or after and can extend, perform validation, cache etc.
-Similar to decorator, but Decorator get reference for decorated object (usually through constructor)
-while Proxy responsible to do that by himself. Proxy implements objects interface.
+Similar to Decorator, but Decorator gets reference for decorated object (usually through constructor)
+while Proxy responsible to do that by itself. Proxy also implements objects interface.
 
 ```go
 // implements io.Writer
@@ -157,22 +138,21 @@ func (c CompressionProxy) Write(p []byte) (n int, err error) {
 ```
 
 ##### Facade
-Incapsulation of complex staff (hierarchy) behind simple interface.
-
-![img](https://refactoring.guru/images/patterns/diagrams/facade/structure.png)
+Incapsulates complex logic (hierarchy) behind simple interface.
 
 ##### Flyweight
-Just a fancy cache.
+**Cache** \
 Let's say you have ton of similar objects. You are creating a Flyweight (factory) that
-responsible for creatint objects with given parameters, but before return such object it
+responsible for creating objects with given parameters, but before return such object it
 saves it to underlying array and next time you'll need it, Flyweight
 will get it from that array.
 
 #### Behavioral
-##### Chan of responisibility
+##### Chan of responsibility
+**Pipeline**\
 Allows pass requests along a chain of handlers. Upon receiving a request, each handler
-decides either to process the request or to pass it to the next handler in the chain.
-
+decides either to process the request or to pass it to the next handler in the chain.\
+There are two possible implementations:
 - If one part of chain fails, no further processing performs.
 - Different way - stop processing on success.
 
@@ -180,10 +160,10 @@ decides either to process the request or to pass it to the next handler in the c
 Sender -> Command -> Receiver
 
 Creates middle layer set of commands where every command represented by its own class
-with common interface. (usually with one method “Execute()”) It requires additional layer
+with common interface. (usually with one method `Execute()`) It requires additional layer
 to bound Commands to Senders. On initialization, Command gets Receiver’s instance.
 After that command may be assigned to Sender. Sender stores a list of Commands, and methods
-to add, remove and execute them, this allows dinamically change Sender’s behavior.
+to add, remove and execute them, this allows to dynamically change Sender’s behavior.
 
 ```
 Senders
@@ -196,64 +176,50 @@ Senders
 
 ##### Iterator
 Moves iteration logic to its own object. Allows to easily implement different iteration
-methods for COMPLEX DATA.
-
-There is usually just interface with methods like `Next()`, `HasNext()`, `GetValue()` etc.
-
-I guess Go's `sort.Interface` is pretty fits into this pattern. (But actually not really)
-
-```go
-// A type, typically a collection, that satisfies sort.Interface can be
-// sorted by the routines in this package. The methods require that the
-// elements of the collection be enumerated by an integer index.
-type Interface interface {
-	// Len is the number of elements in the collection.
-	Len() int
-	// Less reports whether the element with
-	// index i should sort before the element with index j.
-	Less(i, j int) bool
-	// Swap swaps the elements with indexes i and j.
-	Swap(i, j int)
-}
-```
+methods for COMPLEX DATA. There is usually just interface with methods like `Next()`,
+`HasNext()`, `GetValue()` etc.
 
 ##### Mediator
-This one is FAAAT.
-
-The pattern restricts direct communications between the objects and forces them to collaborate only via a mediator object.
-
-Mediator contains all initialized objects that has to communicate with each other and each object contains Mediator's instance.
+The pattern restricts direct communications between the objects and forces them to collaborate
+only via a mediator object. Mediator contains all initialized objects that has to communicate
+with each other and each object contains Mediator's instance.
 
 The Mediator is about the interactions between "colleague" objects who don't know each other.
 encapsulates the interaction between several colleague objects in order to isolate them from each other.
 
 ![img](https://refactoring.guru/images/patterns/diagrams/mediator/structure.png)
 
-##### Memento
-UNDO
+##### Observer
+Lets you define a subscription mechanism to notify multiple objects about any events 
+that happen to the object they’re observing.
 
+##### Memento
+**UNDO**\
 Lets save and restore the previous state of an object.
 
-##### Observer
-Lets you define a subscription mechanism to notify multiple objects about any events that happen to the object they’re observing.
-
 ##### State
-Lets an object alter its behavior when its internal state changes. It appears as if the object changed its class.
-
-There is method like `SetState(IState)` and everything method does goes through it's state.
+Lets an object alter its behavior when its internal state changes. It appears as if the object
+changed its class. There is method like `SetState(IState)` and everything method does goes through
+it's state.
 
 E.g phone call mode (silent, vibration, sound).
 
 ##### Strategy
-Ugh the same as state.
-
+Similar to state.\
 But you are changing implementation.
 
-- The Strategy pattern is really about having a different implementation that accomplishes (basically) the same thing, so that one implementation can replace the other as the strategy requires. For example, you might have different sorting algorithms in a strategy pattern. The callers to the object does not change based on which strategy is being employed, but regardless of strategy the goal is the same (sort the collection).
-- The State pattern is about doing different things based on the state, while leaving the caller relieved from the burden of accommodating every possible state. So for example you might have a getStatus() method that will return different statuses based on the state of the object, but the caller of the method doesn't have to be coded differently to account for each potential state.
-
+- The Strategy pattern is really about having a different implementation that accomplishes (basically)
+the same thing, so that one implementation can replace the other as the strategy requires. For example,
+you might have different sorting algorithms in a strategy pattern. The callers to the object does not
+change based on which strategy is being employed, but regardless of strategy the goal is the same
+(sort the collection).
+- The State pattern is about doing different things based on the state, while leaving the caller
+relieved from the burden of accommodating every possible state. So for example you might have
+a getStatus() method that will return different statuses based on the state of the object,
+but the caller of the method doesn't have to be coded differently to account for each potential state.
 - The Strategy pattern deals with HOW an object performs a certain task -- it encapsulates an algorithm.
-- The State pattern deals with WHAT (state or type) an object is (in) -- it encapsulates state-dependent behavior, whereas
+- The State pattern deals with WHAT (state or type) an object is (in) -- it encapsulates 
+state-dependent behavior, whereas
 
 ##### Template Method
 Defines interface. Defines base struct with methods common for all objects that implements that interface.
@@ -318,19 +284,18 @@ type GetInfoFromCache struct {}
 ```
 
 #### LSP: The Liskov Substitution Principle
-Any interface's realization should be interchengeable in any place.
+Any interface's realization should be interchangeable in any place.
 
 #### ISP: The Interface Segregation Principle
-**Interfaces granularity**
-
 Don't force clients to implement interface they don't use.
 
 #### DIP: The Dependency Inversion Principle
 - Depend on abstractions, not on concretions.
 
-- Модули верхних уровней не должны зависеть от модулей нижних уровней. Оба типа модулей должны зависеть от абстракций.
+**pohuy:**
+- Модули верхних уровней не должны зависеть от модулей нижних уровней. Оба типа модулей должны 
+зависеть от абстракций.
 - Абстракции не должны зависеть от деталей. Детали должны зависеть от абстракций.
-(pohuy)
 
 ### Anti patterns
 https://en.wikipedia.org/wiki/Anti-pattern
@@ -339,9 +304,7 @@ https://en.wikipedia.org/wiki/Anti-pattern
 - repeating
 - globals
 - circular dependencies
-- spagetti code
-
-There is ton of them..
+- spaghetti code
 
 ### Layered architecture
 Four isolated layers:
@@ -353,19 +316,13 @@ Four isolated layers:
 
 The layers are closed, meaning a request must go through all layers from top to bottom.
 
-
-## DB Design
-## Modeling
-## Security
-## Algorithms
-
 # Core
 ## Programming language :bulb:
 ### Interfaces: Interface Values, Type Assertions
-https://research.swtch.com/interfaces
+https://research.swtch.com/interfaces\
 https://github.com/teh-cmc/go-internals/blob/master/chapter2_interfaces/README.md
 
-Interface is an abstract data type, that doesn't expose the representation
+Interface is an abstract data type that doesn't expose the representation
 of internal structure. When you have a value of an interface type, you know
 nothing about what it is, you know only what it can do.
 
@@ -413,7 +370,7 @@ fmt.Println(x == nil) // false
 ### Stack and heap
 https://segment.com/blog/allocation-efficiency-in-high-performance-go-services/
 
-Heap - global programm memory. If a function creates a variable and returns reference to it,
+Heap - global program memory. If a function creates a variable and returns reference to it,
 the variable allocates in heap.
 
 Stack - local memory allocated per function. It has its own top that moves up and down for each nested
@@ -425,7 +382,7 @@ and another to release from the stack. On the other side, heap allocations are e
 search for a chunk of free memory large enough to hold the new value and the garbage collector
 scans the heap for objects which are no longer referenced.
 
-Compiler performs `escape analysis` - set of rules that variable must pass on compilation stage
+Compiler performs `escape analysis` - set of rules that variable must pass on **compilation** stage
 to be allocated in stack. Stack allocation requires that the lifetime and memory footprint of a
 variable can be determined at compile time.
 
@@ -471,10 +428,6 @@ The "where" is specified by hmap.buckets. This is a pointer value, it points to 
 [8]tophash -> [8]key -> [8]value -> overflowpointer
 ```
 
-### High ordered functions
-A Higher-Order function is a function that receives a function as an argument or returns the function as output.
-Higher order functions are functions that operate on other functions, either by taking them as arguments or by returning them.
-
 ### Channels
 ```go
 type hchan struct {
@@ -492,11 +445,10 @@ type hchan struct {
 }
 ```
 
-`buf` - array with size
-`closed` - flag
-`lock` - embedded structure
-`send` and `recvq` - sudog sudog represents a g in a wait list, such as for
-sending/receiving on a channel.
+- `buf` - array with size
+- `closed` - flag
+- `lock` - embedded structure
+- `sendq` and `recvq` - goroutines queue referenced to this channel
 
 ```go
 // allocates hchan in heap
@@ -505,11 +457,14 @@ func makechan(t *chantype, size int64) *hchan {/*...*/}
 
 `makechan` returns pointer to channel, so it's possible to pass them as it is.
 
-While send and receive operations it acquires a lock, performs operations under `buf` array
-and releases the lock.
-
 ### Reflection: Rules of usage, reflect.Type, reflect.Value, Struct tags
-https://blog.golang.org/laws-of-reflection
+https://blog.golang.org/laws-of-reflection\
+https://github.com/golang/go/blob/master/src/reflect/type.go
+
+1) Reflection goes from interface value to reflection object.
+2) Reflection goes from reflection object to interface value.
+3) To modify a reflection object, the value must be settable.
+Settable value - pointer value.
 
 Reflection in computing is the ability of a program to examine its own structure, particularly through types.
 A variable of interface type stores a pair: the concrete value assigned to the variable, and that value's type descriptor. To be more precise, the value is the underlying concrete data item that implements the interface and the type describes the full type of that item.
@@ -518,26 +473,13 @@ A variable of interface type stores a pair: the concrete value assigned to the v
 func TypeOf(i interface{}) Type
 func ValueOf(i interface{}) Value
 ```
+
 `reflect.Type` and `reflect.Value` are interfaces describing type and value of interface.
-Theese two are just examining interface's descriptor `itab *itable` to find out the undelying type and it's value.
-Passing non-interface value to theese function just converts them to empty `interface{}` and then does the job.
+These two are just examining interface's descriptor `itab *itable` to find out the underlying
+type and it's value. Passing non-interface value to these function just converts them to 
+empty `interface{}`.
 
-https://github.com/golang/go/blob/master/src/reflect/type.go
-
-1) Reflection goes from interface value to reflection object.
-2) Reflection goes from reflection object to interface value.
-3) To modify a reflection object, the value must be settable.
-Settable value - pointer value.
-
-### Blank identifier
-`_` place holder where value is not needed.
-
-### Dependencie injection
-Pattern bridge.
-
-Dependency injection (DI) is a style of writing code such that the dependencies of a particular object (or, in go, a struct) are provided at the time the object is initialized. Object is not responsible to initialize dependencies.
-
-### io.Reader, io.Writer, sort.Interface, error interfaces
+### io.Reader, io.Writer, sort.Interface, error
 https://github.com/golang/go/blob/master/src/io/io.go
 ```go
 // Read reads up to len(p) bytes into p. It returns the number of bytes
@@ -577,7 +519,7 @@ type Interface interface {
 }
 ```
 
-### Errors:
+https://github.com/golang/go/blob/master/src/errors/errors.go
 ```go
 type error interface {
     Error() string
@@ -586,9 +528,8 @@ type error interface {
 
 ### Env variables
 ```go
+// os package
 func Getenv(key string) string
-```
-```go
 func Setenv(key, value string) error
 ```
 
@@ -610,38 +551,43 @@ func main() {
 ```
 
 ### Effective go notes
-- Go doesn't provide automatic support for getters and setters. There's nothing wrong with providing getters and setters yourself, and it's often appropriate to do so, but it's neither idiomatic nor necessary to put Get into the getter's name. If you have a field called owner (lower case, unexported), the getter method should be called Owner (upper case, exported), not GetOwner. The use of upper-case names for export provides the hook to discriminate the field from the method. A setter function, if needed, will likely be called SetOwner. Both names read well in practice:
+- Go doesn't provide automatic support for getters and setters. There's nothing wrong with providing
+getters and setters yourself, and it's often appropriate to do so, but it's neither idiomatic nor 
+necessary to put Get into the getter's name. If you have a field called owner (lower case, unexported),
+the getter method should be called Owner (upper case, exported), not GetOwner. The use of upper-case
+names for export provides the hook to discriminate the field from the method. A setter function,
+if needed, will likely be called SetOwner. Both names read well in practice:
 
-```go
-owner := obj.Owner()
-if owner != user {
-    obj.SetOwner(user)
-}
-```
-(getters without `Get-`, but setters with `Set-`)
+    ```go
+    owner := obj.Owner()
+    if owner != user {
+        obj.SetOwner(user)
+    }
+    ```
 
-- By convention, one-method interfaces are named by the method name plus an -er suffix or similar modification to construct an agent noun: Reader, Writer, Formatter, CloseNotifier etc.
+- By convention, one-method interfaces are named by the method name plus an -er suffix or similar
+modification to construct an agent noun: Reader, Writer, Formatter, CloseNotifier etc.
 
 - Switches has `break`
 
 - Last defer executes first
-```go
-for i := 0; i < 5; i++ {
-    defer fmt.Printf("%d ", i)
-}
-// prints 4, 3, 2, 1
-```
+    ```go
+    for i := 0; i < 5; i++ {
+        defer fmt.Printf("%d ", i)
+    }
+    // prints 4, 3, 2, 1
+    ```
 
 - Arguments to deferred functions are evaluated when the defer executes.
-```go
-func main() {
-	var x = 10
-	defer fmt.Println(x)
-	x = 20
-}
-
-// prints 10
-```
+    ```go
+    func main() {
+    	var x = 10
+    	defer fmt.Println(x)
+    	x = 20
+    }
+    
+    // prints 10
+    ```
 
 - If a type exists only to implement an interface and will never have exported methods beyond that interface, there is no need to export the type itself.
 
@@ -649,18 +595,6 @@ func main() {
 
 - Do not communicate by sharing memory; instead, share memory by communicating.
 One way to think about this model is to consider a typical single-threaded program running on one CPU. It has no need for synchronization primitives. Now run another such instance; it too needs no synchronization. Now let those two communicate; if the communication is the synchronizer, there's still no need for other synchronization. Unix pipelines, for example, fit this model perfectly.
-
-- Just nice peace of code
-```go
-c := make(chan int)  // Allocate a channel.
-// Start the sort in a goroutine; when it completes, signal on the channel.
-go func() {
-    list.Sort()
-    c <- 1  // Send a signal; value does not matter.
-}()
-doSomethingForAWhile()
-<-c   // Wait for sort to finish; discard sent value.
-```
 
 ## Tools & Ecosystem :bulb:
 ### Escape analysis
@@ -689,16 +623,13 @@ Race conditions are among the most insidious and elusive programming errors. The
 
 The race detector is based on the C/C++ ThreadSanitizer runtime library, which has been used to detect many errors in Google's internal code base and in Chromium. The technology was integrated with Go in September 2012; since then it has detected 42 races in the standard library. It is now part of our continuous build process, where it continues to catch race conditions as they arise.
 
-- memory sync:
 > an unsynchronized read and write of the variable t from different goroutines.
-that's the race condition^ and should be avoided
+that's the race condition and should be avoided
 
 ### Concurrent vs Parallel 
-Concurency is about dealing with few things at once.
-It's how programm is built.
+- Concurrency is about dealing with few things at once. It's how program is built.
 E.g. perform operations while access ext resource like http, i/o, syscall.
-
-Parallelism is about performing simultaneous independently.
+- Parallelism is about performing processes independently.
 
 ### Timeouts
 ```go
@@ -717,7 +648,8 @@ TODO: https://sudo.ch/unizh/concurrencypatterns/ConcurrencyPatterns.pdf
 https://blog.golang.org/pipelines
 
 #### Pipelines
-Informally, a pipeline is a series of stages connected by channels, where each stage is a group of goroutines running the same function. In each stage, the goroutines
+Informally, a pipeline is a series of stages connected by channels, where each stage is a group
+of goroutines running the same function. In each stage, the goroutines
 - receive values from upstream via inbound channels
 - perform some function on that data, usually producing new values
 - send values downstream via outbound channels
@@ -754,8 +686,9 @@ func main() {
 }
 ```
 
-#### Cancellaction
-When main decides to exit without receiving all the values from out, it must tell the goroutines in the upstream stages to abandon the values they're trying to send.
+#### Cancellation
+When main decides to exit without receiving all the values from out, it must tell
+the goroutines in the upstream stages to abandon the values they're trying to send.
 
 1) Additional channel done that will be closed when receiver don't need values
 2) Context `Cancel()` `Done()`
@@ -774,6 +707,8 @@ for n := range c {
 Pretty simple to first step from pipeline.
 Kinda useless pattern, but the main idea is next:
 
+**TODO: TOO FUZZY**
+
 - function `Subscribe(Resource) Subscription`
 - `Resource` interface responsible to produce `items` (might be usual `database/sql` query result)
 - `Subscription` - interface with method `Updates() chan items` and `Close()`
@@ -783,7 +718,9 @@ Kinda useless pattern, but the main idea is next:
 #### Ping-pong
 Even more useless than subscription.
 
-Create two channels `ping` and `pong` (unexpected), then start two goroutines `pinger` and `ponger` that receive ping and pong, each goroutine starts endless loop where reads from `ping` does something and writes to `pong` and vice versa.
+Create two channels `ping` and `pong` (unexpected), then start two 
+goroutines `pinger` and `ponger` that receive ping and pong, each goroutine
+starts endless loop where reads from `ping` does something and writes to `pong` and vice versa.
 
 #### Fan-out
 Multiple functions can read from the same channel until that channel is closed; this is called fan-out.
@@ -791,8 +728,10 @@ Multiple functions can read from the same channel until that channel is closed; 
 #### Fan-in
 A function can read from multiple inputs and proceed until all are closed by multiplexing the input channels onto a single channel that's closed when all the inputs are closed. This is called fan-in.
 
-- Distribute work between few pipelines, then merge the output (in goroutine) and return resulting channel.
-Nice peace of code
+- Distribute work between few pipelines, then merge the output (in goroutine) 
+and return resulting channel.
+
+Nice peace of code:
 ```go
 func merge(cs ...<-chan int) <-chan int {
     var wg sync.WaitGroup
@@ -824,15 +763,20 @@ func merge(cs ...<-chan int) <-chan int {
 #### Workers
 Nice and simple
 
+**TODO: TOO FUZZY**
+
 - function `worker(jobs, results chan interface{})`
 - start few workers (GOMAXPOC as an option)
 - send to `jobs`
 
-Actually it's extremely simple to pipelines, but pipelines return resulting channel rather then receive it.
+Actually it's extremely similar to pipelines, but pipelines return resulting channel 
+rather then receive it.
 
 #### Parallel for-loop
 Like this:
-(weird example since that isn't semapthore)
+(weird example since that isn't semaphore)
+
+**TODO: BAD EXAMPLE**
 
 ```go
 type empty {}
