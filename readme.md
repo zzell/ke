@@ -138,7 +138,7 @@ func (c CompressionProxy) Write(p []byte) (n int, err error) {
 ```
 
 ##### Facade
-Incapsulates complex logic (hierarchy) behind simple interface.
+Hides complex logic (hierarchy) behind simple interface.
 
 ##### Flyweight
 **Cache** \
@@ -268,10 +268,10 @@ One class should solve only one problem.
 - A software artifact should be open for extension but closed for modification.
 - Old: You should be able to extend a classes behavior, without modifying it.
 
-Module declares only interface WITHOUT realiztion. Realization defined in other module.
-Thus you are able to use different realization without recompilcation.
+Module declares only interface WITHOUT realization. Realization defined in other module.
+Thus you are able to use different realization without recompilation.
 
-And when you'll need to change behaviour you can just implement another interface.
+And when you'll need to change behaviour you can just implement interface in another way.
 
 ```go
 type GetInfo interface {
@@ -317,7 +317,7 @@ Four isolated layers:
 The layers are closed, meaning a request must go through all layers from top to bottom.
 
 # Core
-## Programming language :bulb:
+## Programming language
 ### Interfaces: Interface Values, Type Assertions
 https://research.swtch.com/interfaces\
 https://github.com/teh-cmc/go-internals/blob/master/chapter2_interfaces/README.md
@@ -479,52 +479,8 @@ These two are just examining interface's descriptor `itab *itable` to find out t
 type and it's value. Passing non-interface value to these function just converts them to 
 empty `interface{}`.
 
-### io.Reader, io.Writer, sort.Interface, error
-https://github.com/golang/go/blob/master/src/io/io.go
-```go
-// Read reads up to len(p) bytes into p. It returns the number of bytes
-// read (0 <= n <= len(p)) and any error encountered. Even if Read
-// returns n < len(p), it may use all of p as scratch space during the call.
-// If some data is available but not len(p) bytes, Read conventionally
-// returns what is available instead of waiting for more.
-type Reader interface {
-	Read(p []byte) (n int, err error)
-}
-
-// Write writes len(p) bytes from p to the underlying data stream.
-// It returns the number of bytes written from p (0 <= n <= len(p))
-// and any error encountered that caused the write to stop early.
-// Write must return a non-nil error if it returns n < len(p).
-// Write must not modify the slice data, even temporarily.
-//
-// Implementations must not retain p.
-type Writer interface {
-	Write(p []byte) (n int, err error)
-}
-```
-
-https://github.com/golang/go/blob/master/src/sort/sort.go
-```go
-// A type, typically a collection, that satisfies sort.Interface can be
-// sorted by the routines in this package. The methods require that the
-// elements of the collection be enumerated by an integer index.
-type Interface interface {
-	// Len is the number of elements in the collection.
-	Len() int
-	// Less reports whether the element with
-	// index i should sort before the element with index j.
-	Less(i, j int) bool
-	// Swap swaps the elements with indexes i and j.
-	Swap(i, j int)
-}
-```
-
-https://github.com/golang/go/blob/master/src/errors/errors.go
-```go
-type error interface {
-    Error() string
-}
-```
+### io.Reader, io.Writer, sort.Interface, error...
+https://gist.github.com/asukakenji/ac8a05644a2e98f1d5ea8c299541fce9
 
 ### Env variables
 ```go
@@ -589,22 +545,25 @@ modification to construct an agent noun: Reader, Writer, Formatter, CloseNotifie
     // prints 10
     ```
 
-- If a type exists only to implement an interface and will never have exported methods beyond that interface, there is no need to export the type itself.
+- If a type exists only to implement an interface and will never have exported methods beyond that
+interface, there is no need to export the type itself.
 
 - Import for side effects `import _ "net/http/pprof"` e.g. for it's init function.
 
 - Do not communicate by sharing memory; instead, share memory by communicating.
-One way to think about this model is to consider a typical single-threaded program running on one CPU. It has no need for synchronization primitives. Now run another such instance; it too needs no synchronization. Now let those two communicate; if the communication is the synchronizer, there's still no need for other synchronization. Unix pipelines, for example, fit this model perfectly.
+One way to think about this model is to consider a typical single-threaded program running on one CPU.
+It has no need for synchronization primitives. Now run another such instance; it too needs no 
+synchronization. Now let those two communicate; **if the communication is the synchronizer**,
+there's still no need for other synchronization. Unix pipelines, for example, fit this model perfectly.
 
-## Tools & Ecosystem :bulb:
+## Tools & Ecosystem
 ### Escape analysis
 `go run -gcflags '-m' main.go` - shows escape analysis details
 
-## Go Concurrency :bulb:
+## Go Concurrency
 ### WaitGroup
-https://github.com/golang/go/blob/master/src/sync/waitgroup.go
-`sync.WaitGroup (struct)`
-
+https://github.com/golang/go/blob/master/src/sync/waitgroup.go\
+`sync.WaitGroup (struct)`:
 ```go
 wg.Add(1)
 wg.Done()
@@ -618,13 +577,6 @@ Using memory for communication inside a single program, e.g. among its multiple 
 
 ### Race Detector (Memory synchronization, Lazy initialisation)
 https://blog.golang.org/race-detector
-
-Race conditions are among the most insidious and elusive programming errors. They typically cause erratic and mysterious failures, often long after the code has been deployed to production. While Go's concurrency mechanisms make it easy to write clean concurrent code, they don't prevent race conditions. Care, diligence, and testing are required. And tools can help.
-
-The race detector is based on the C/C++ ThreadSanitizer runtime library, which has been used to detect many errors in Google's internal code base and in Chromium. The technology was integrated with Go in September 2012; since then it has detected 42 races in the standard library. It is now part of our continuous build process, where it continues to catch race conditions as they arise.
-
-> an unsynchronized read and write of the variable t from different goroutines.
-that's the race condition and should be avoided
 
 ### Concurrent vs Parallel 
 - Concurrency is about dealing with few things at once. It's how program is built.
@@ -642,11 +594,9 @@ select {
 ```
 
 ### Concurrency patterns
-TODO: https://sudo.ch/unizh/concurrencypatterns/ConcurrencyPatterns.pdf
+**TODO:** https://sudo.ch/unizh/concurrencypatterns/ConcurrencyPatterns.pdf
 
 ### Go concurrency patterns
-https://blog.golang.org/pipelines
-
 #### Pipelines
 Informally, a pipeline is a series of stages connected by channels, where each stage is a group
 of goroutines running the same function. In each stage, the goroutines
@@ -686,113 +636,39 @@ func main() {
 }
 ```
 
-#### Cancellation
-When main decides to exit without receiving all the values from out, it must tell
-the goroutines in the upstream stages to abandon the values they're trying to send.
-
-1) Additional channel done that will be closed when receiver don't need values
-2) Context `Cancel()` `Done()`
-
+#### Workers
 ```go
-for n := range c {
-	select {
-	case out <- n: // write to chan
-	case <-done:   // receive from done
-		return
+// out is passed as argument instead of being created
+func sq(in <-chan int, out chan int, wg *sync.WaitGroup) {
+	go func() {
+		for n := range in {
+			out <- n * n
+		}
+		wg.Done()
+	}()
+}
+
+func main() {
+	// GEN IS TAKEN FROM PIPELINE EXAMPLE
+	job := gen(1, 2, 3, 4, 5)
+	res := make(chan int)
+	var wg sync.WaitGroup
+
+	for i := 0; i < runtime.NumCPU(); i++ {
+		wg.Add(1)
+		go sq(job, res, &wg)
+	}
+
+	// wait on the workers to finish and close the result channel
+	go func() {
+		wg.Wait()
+		close(res)
+	}()
+
+	for r := range res {
+		fmt.Println(r)
 	}
 }
-```
-
-#### Subscription
-Pretty simple to first step from pipeline.
-Kinda useless pattern, but the main idea is next:
-
-**TODO: TOO FUZZY**
-
-- function `Subscribe(Resource) Subscription`
-- `Resource` interface responsible to produce `items` (might be usual `database/sql` query result)
-- `Subscription` - interface with method `Updates() chan items` and `Close()`
-
-`Subscribe` function starts goroutine under the hood that writes to `Subscription`'s internal channel. So that logic is hidden behind "simple" `Subscription` interface.
-
-#### Ping-pong
-Even more useless than subscription.
-
-Create two channels `ping` and `pong` (unexpected), then start two 
-goroutines `pinger` and `ponger` that receive ping and pong, each goroutine
-starts endless loop where reads from `ping` does something and writes to `pong` and vice versa.
-
-#### Fan-out
-Multiple functions can read from the same channel until that channel is closed; this is called fan-out.
-
-#### Fan-in
-A function can read from multiple inputs and proceed until all are closed by multiplexing the input channels onto a single channel that's closed when all the inputs are closed. This is called fan-in.
-
-- Distribute work between few pipelines, then merge the output (in goroutine) 
-and return resulting channel.
-
-Nice peace of code:
-```go
-func merge(cs ...<-chan int) <-chan int {
-    var wg sync.WaitGroup
-    out := make(chan int)
-
-    // Start an output goroutine for each input channel in cs.  output
-    // copies values from c to out until c is closed, then calls wg.Done.
-    output := func(c <-chan int) {
-        for n := range c {
-            out <- n
-        }
-        wg.Done()
-    }
-    wg.Add(len(cs))
-    for _, c := range cs {
-        go output(c)
-    }
-
-    // Start a goroutine to close out once all the output goroutines are
-    // done.  This must start after the wg.Add call.
-    go func() {
-        wg.Wait()
-        close(out)
-    }()
-    return out
-}
-```
-
-#### Workers
-Nice and simple
-
-**TODO: TOO FUZZY**
-
-- function `worker(jobs, results chan interface{})`
-- start few workers (GOMAXPOC as an option)
-- send to `jobs`
-
-Actually it's extremely similar to pipelines, but pipelines return resulting channel 
-rather then receive it.
-
-#### Parallel for-loop
-Like this:
-(weird example since that isn't semaphore)
-
-**TODO: BAD EXAMPLE**
-
-```go
-type empty {}
-
-data := make([]float, N);
-res := make([]float, N);
-sem := make(chan empty, N);  // semaphore pattern
-
-for i,xi := range data {
-    go func (i int, xi float) {
-        res[i] = doSomething(i,xi);
-        sem <- empty{};
-    } (i, xi);
-}
-// wait for goroutines to finish
-for i := 0; i < N; ++i { <-sem }
 ```
 
 #### Semaphore
@@ -830,13 +706,94 @@ func do(jobs []job) error {
 }
 ```
 
-## Networking :bulb:
+#### Cancellation
+When main decides to exit without receiving all the values from out, it must tell
+the goroutines in the upstream stages to abandon the values they're trying to send.
+1. Additional channel done that will be closed when receiver don't need values
+2. Context `Cancel()` `Done()`
+
+```go
+for n := range c {
+	select {
+	case out <- n: // write to chan
+	case <-done:   // receive from done
+		return
+	}
+}
+```
+
+#### Subscription
+Kinda useless pattern, but the main idea is next:
+
+- function `Subscribe(r Resource) s Subscription {}`
+- `Resource` responsible to produce `Items` (e.g. `database/sql` query result)
+- `Subscription` - interface with method `Updates() <-chan Items` and `Close()`
+
+`Subscribe` function starts goroutine under the hood that writes to `Subscription`'s internal channel. 
+So that logic is hidden behind "simple" `Subscription` interface.
+
+#### Ping-pong
+Even more useless than subscription.
+
+Create two channels `ping` and `pong` (unexpected), then start two 
+goroutines `pinger` and `ponger` that receive ping and pong, each goroutine
+starts endless loop where reads from `ping` does something and writes to `pong` and vice versa.
+
+#### Fan-out
+Multiple functions can read from the same channel until that channel is closed; this is called fan-out.
+
+#### Fan-in
+A function can read from multiple inputs and proceed until all are closed by multiplexing 
+the input channels onto a single channel that's closed when all the inputs are closed. 
+This is called fan-in.
+
+- Distribute work between few pipelines, then merge the output (in goroutine) 
+and return resulting channel.
+
+```go
+func merge(cs ...<-chan int) <-chan int {
+    var wg sync.WaitGroup
+    out := make(chan int)
+
+    // Start an output goroutine for each input channel in cs.  output
+    // copies values from c to out until c is closed, then calls wg.Done.
+    output := func(c <-chan int) {
+        for n := range c {
+            out <- n
+        }
+        wg.Done()
+    }
+
+    wg.Add(len(cs))
+    for _, c := range cs {
+        go output(c)
+    }
+
+    // Start a goroutine to close out once all the output goroutines are
+    // done.  This must start after the wg.Add call.
+    go func() {
+        wg.Wait()
+        close(out)
+    }()
+    return out
+}
+```
+
+#### Parallel for-loop
+**TODO**
+
+## Networking
 ### TCP/IP
 Transmission control protocol
 
-TCP/IP is a system (or suite) of protocols, and a protocol is a system of rules and procedures. The TCP/IP protocol system is divided into separate components that theoretically function independently from one another. Each component is responsible for a piece of the communication process.
+TCP/IP is a system of protocols, and a protocol is a system of rules and procedures. 
+The TCP/IP protocol system is divided into separate components that theoretically function 
+independently from one another. Each component is responsible for a piece of the communication process.
 
-Because of TCP/IP’s modular design, a vendor such as Microsoft does not have to build a completely different software package for TCP/IP on an optical-fiber network (as opposed to TCP/IP on an ordinary ethernet network). The upper layers are not affected by the different physical architecture; only the Network Access layer must change.
+Because of TCP/IP’s modular design, a vendor such as Microsoft does not have to build a completely 
+different software package for TCP/IP on an optical-fiber network (as opposed to TCP/IP on an 
+ordinary ethernet network). The upper layers are not affected by the different physical architecture;
+only the Network Access layer must change.
 
 ```
 |----------------------+--------------------|
@@ -864,12 +821,13 @@ logical links for the subnet
 - Application layer: Provides a network interface for applications; supports
 network applications for file transfer, communications, and so forth
 
-The data passes through all layers from top to down (or vice-versa when consuming), every layer adds some headers to data, and these headers are important on the next layer.
+The data passes through all layers from top to down (or vice-versa when consuming), every 
+layer adds some headers to data, and these headers are important on the next layer.
 
 ### UDP
 User datagram protocol. (faster but not reliable)
 - does not establish a session.
-- does not garantee data delivering.
+- does not guarantee data delivering.
 
 ### Application layer protocols
 - HTTP: Hypertext Transfer Protocol. (1989) Used to transmit hypertext documents that include hyperlinks to other resources that the user can easily access. Request-response model. HTTP2 - полного сжатия данных, контроля трафика, инициации событий с сервера, переиспользования одного cокета для нескольких параллельных запросов.
@@ -877,69 +835,70 @@ User datagram protocol. (faster but not reliable)
 - SMTP: Simple mail transfer protocol. (1974) Used for sending emails between servers smtp.googe.com -> smtp.yahoo.go. Build on top of tcp/ip (port 25)
 
 ### WWW world wide web
-**Information system** where documents and other web resources are identified by Uniform Resource Locators (URL), which may be interlinked by hypertext, and are accessible over the Internet. The resources of the WWW are transfered via the Hypertext Transfer Protocol (HTTP) and may be accessed by users by a software application called a web browser and are published by a software application called a web server.
+**Information system** where documents and other web resources are identified by **Uniform Resource Locators (URL)**, which may be interlinked by hypertext, and are accessible over the Internet. The resources of the WWW are transfered via the Hypertext Transfer Protocol (HTTP) and may be accessed by users by a software application called a web browser and are published by a software application called a web server.
 
 ### HTTPS
-TLS: Transport layer security.
+**TLS: Transport layer security.**
 
-All the data during communication is encrypted via **symmetric algorithm**, the key is created during handshake: 
-
-- The 'client hello' message: The client initiates the handshake by sending a "hello" message to the server. The message will include which TLS version the client supports, the cipher suites (encryption algorithms) supported, and a string of random bytes known as the "client random."
-- The 'server hello' message: In reply to the client hello message, the server sends a message containing the server's SSL certificate, the server's chosen cipher suite, and the "server random," another random string of bytes that's generated by the server.
-- Authentication: The client verifies the server's SSL certificate with the certificate authority that issued it. This confirms that the server is who it says it is, and that the client is interacting with the actual owner of the domain.
-- The premaster secret: The client sends one more random string of bytes, the "premaster secret." The premaster secret is encrypted with the public key and can only be decrypted with the private key by the server. (The client gets the public key from the server's SSL certificate.)
-- Private key used: The server decrypts the premaster secret.
-- Session key created: Both client and server generate session key from the client random, the server random, and the premaster secret. They should arrive at the same results.
-- Client sends encrypted message with "shared secret".
-- The server decrypts and verifies the message, then it sends another encrypted message to the client.
-- Client verifies the message.
-- Client is ready: The client sends a "finished" message that is encrypted with a session key.
-- Server is ready: The server sends a "finished" message encrypted with a session key.
-- Secure symmetric encryption achieved: The handshake is completed, and communication continues using the session keys.
+All the data during communication is encrypted via **symmetric algorithm**, the key is created 
+during handshake:
+1. The 'client hello' message: The client initiates the handshake by sending a "hello" message to the server. The message will include which TLS version the client supports, the cipher suites (encryption algorithms) supported, and a string of random bytes known as the "client random."
+2. The 'server hello' message: In reply to the client hello message, the server sends a message containing the server's SSL certificate, the server's chosen cipher suite, and the "server random," another random string of bytes that's generated by the server.
+3. Authentication: The client verifies the server's SSL certificate with the certificate authority that issued it. This confirms that the server is who it says it is, and that the client is interacting with the actual owner of the domain.
+4. The pre-master secret: The client sends one more random string of bytes, the "pre-master secret." The pre-master secret is encrypted with the public key and can only be decrypted with the private key by the server. (The client gets the public key from the server's SSL certificate.)
+5. Private key used: The server decrypts the pre-master secret.
+6. Session key created: Both client and server generate session key from the client random, the server random, and the pre-master secret. They should arrive at the same results.
+7. Client sends encrypted message with "shared secret".
+8. The server decrypts and verifies the message, then it sends another encrypted message to the client.
+9. Client verifies the message.
+10. Client is ready: The client sends a "finished" message that is encrypted with a session key.
+11. Server is ready: The server sends a "finished" message encrypted with a session key.
+12. Secure symmetric encryption achieved: The handshake is completed, and communication continues using the session keys.
 
 ### DNS Domain Name System
-Hierarchical and decentralized naming system for computers, services, or other resources connected to the Internet or a private network. It associates various information with domain names assigned to each of the participating entities. Most prominently, it translates more readily memorized domain names to the numerical IP addresses needed for locating and identifying computer services and devices with the underlying network protocols. 
-
-# Back-End
-## Web and Application Servers
-## Cloud-based Deployment Services
+Hierarchical and decentralized naming system for computers, services, or other resources
+connected to the Internet or a private network. It associates various information with domain
+names assigned to each of the participating entities. Most prominently, it translates more 
+readily memorized domain names to the numerical IP addresses needed for locating and identifying
+computer services and devices with the underlying network protocols. 
 
 # DB
-## SQL Structured query langugae :bulb:
+## SQL Structured query langugae
 ### Tables, relationships, keys, constraints 
-Primary key - is **unique** column (or set of columns) that is used to identify each row in the table. If primary key contains from few columns - the may not be unique, but the set of columns has to.
-Foreign key - the column or set of columns used to establish link between tables. It holds another's tables primary key.
+Primary key - is **unique** column (or set of columns) that is used to identify each row
+in the table. If primary key contains from few columns - the may not be unique, but the set
+of columns has to. Foreign key - the column or set of columns used to establish link between 
+tables. It holds another's tables primary key.
 
 Relationships:
-- one to one
-- one to many
-- many to many
+- ONE TO ONE
+- ONE TO MANY
+- MANY TO MANY
 
 ### DDL, DML, DCL
+- DML Data Manipulation Language.\
+`SELECT` - Retrieves data from a table\
+`INSERT` - Inserts data into a table\
+`UPDATE` - Updates existing data into a table\
+`DELETE` - Deletes all records from a table
 
-- DML is abbreviation of Data Manipulation Language. It is used to retrieve, store, modify, delete, insert and update data in database.
-SELECT – Retrieves data from a table
-INSERT -  Inserts data into a table
-UPDATE – Updates existing data into a table
-DELETE – Deletes all records from a table
+- DDL Data Definition Language.\
+`CREATE` – Creates objects in the database\
+`ALTER` – Alters objects of the database\
+`DROP` – Deletes objects of the database\
+`TRUNCATE` – Deletes all records from a table and resets table identity to initial value.
 
-- DDL is abbreviation of Data Definition Language. It is used to create and modify the structure of database objects in database.
-CREATE – Creates objects in the database
-ALTER – Alters objects of the database
-DROP – Deletes objects of the database
-TRUNCATE – Deletes all records from a table and resets table identity to initial value.
+- DCL Data Control Language.\
+`GRANT` – Gives user's access privileges to database\
+`REVOKE` – Withdraws user's access privileges to database given with the GRANT command
 
-- DCL is abbreviation of Data Control Language. It is used to create roles, permissions, and referential integrity as well it is used to control access to database by securing it.
-GRANT – Gives user's access privileges to database
-REVOKE – Withdraws user's access privileges to database given with the GRANT command
+- TCL Transactional Control Language.\
+`COMMIT` – Saves work done in transactions\
+`ROLLBACK` – Restores database to original state since the last COMMIT command in transactions\
+`SAVE TRANSACTION` – Sets a savepoint within a transaction
 
-- TCL is abbreviation of Transactional Control Language. It is used to manage different transactions occurring within a database.
-COMMIT – Saves work done in transactions
-ROLLBACK – Restores database to original state since the last COMMIT command in transactions
-SAVE TRANSACTION – Sets a savepoint within a transaction
-
-### Data types (postgres)
-https://www.postgresql.org/docs/9.5/datatype.html + Composite
+### Data types
+https://www.postgresql.org/docs/9.5/datatype.html + User defined
 
 ### Operators, functions
 https://www.w3schools.com/sql/sql_operators.asp
@@ -951,10 +910,13 @@ https://www.w3schools.com/sql/sql_join.asp
 ```sql
 SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
 FROM Orders
-INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID; # attach customer row if o.customerID == c.CustomerID
+-- attach customer row if o.customerID == c.CustomerID
+INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
 ```
 
-### GROUP BY
+![](https://i.imgur.com/v23nUwQg.png)
+
+### Group By
 https://www.w3schools.com/sql/sql_groupby.asp
 ```
 SELECT COUNT(CustomerID), Country
@@ -963,56 +925,69 @@ GROUP BY Country; # count how many customers leaves in each country
                   # without it it would just count all of the customers.
 ```
 
-### UNION
+### Union
 https://www.w3schools.com/sql/sql_union.asp
 Combines the result of few SELECT statements.
 
 ### Creating, modifying, removing database objects
-- DROP DATABASE name;
-- CREATE DATABASE name;
-TODO: modify?
+```sql
+DROP DATABASE name;
+CREATE DATABASE name;
+```
 
-### SESSION
-Interaction between database server and client.
+### Session
+Interaction unit between database server and client.
 ```sql
 CONNECT user@database
 ```
 
-### TRANSACTION
-Ensures that all operations within the work unit are completed successfully. Otherwise, the transaction is aborted at the point of failure and all the previous operations are rolled back to their former state.
+### Transaction
+Ensures that all operations within the work unit are completed successfully. Otherwise, 
+the transaction is aborted at the point of failure and all the previous operations are
+rolled back to their former state.
 
-- START TRANSACTION or BEGIN start a new transaction.
-- COMMIT − to save the changes.
-- ROLLBACK − to roll back the changes.
-- SAVEPOINT − creates points within the groups of transactions in which to ROLLBACK.
-- SET TRANSACTION − Places a name on a transaction.
+- `START TRANSACTION` or `BEGIN` start a new transaction.
+- `COMMIT` - to save the changes.
+- `ROLLBACK` - to roll back the changes.
+- `SAVEPOINT` - creates points within the groups of transactions in which to ROLLBACK.
+- `SET TRANSACTION` - Places a name on a transaction.
 
-### LOCK
-There are two kinds of locks - READ|WRITE.
-```sql
-LOCK TABLES table_name [READ | WRITE]
-```
-
+### Lock
 A READ|WRITE locks has the following features:
 - The only session that holds the lock of a table can read/write data from the table.
 - Other sessions cannot read data from and write data to the table until the WRITE lock is released.
 
-### ISOLATION LEVELS
-Thats all about concurrent reads/writers, e.g. what datbase should do if there is dirty write (uncommited) and you access same data?
+```sql
+LOCK TABLES table_name [READ | WRITE]
+```
 
-https://www.geeksforgeeks.org/transaction-isolation-levels-dbms/
+### Isolation levels
+**I in ACID**
 
-- dirty reads - read data while another transaction.
-- non-repeatable reads - read data few times in single transaction, but another transaction is commited update between reads.
-- phantom reads - same as above, but another tr commits adding new row. 
+https://www.geeksforgeeks.org/transaction-isolation-levels-dbms/\
+Isolation levels define the degree to which a transaction must be isolated from the data 
+modifications made by any other transaction in the database system. (Rules for acquiring a LOCK.)
+
+- `dirty reads` - read data while another uncommitted write.
+- `non-repeatable reads` - read data few times in single transaction, 
+but another transaction is committed update between reads.
+- `phantom reads` - same as above, but another transaction commits adding new row. 
+
 
 - **Read uncommitted** permits dirty reads, non repeatable reads and phantom reads.
 - **Read committed** permits non repeatable reads and phantom reads.
 - **Repeatable read** permits only phantom reads.
 - **Serializable** does not permit any read errors.
 
+ To set the global isolation level at server startup, use the `--transaction-isolation=level`
+option on the command line or in an option file.
+
 ### Stored procedure
-A stored procedure is a prepared SQL code that you can save, so the code can be reused over and over again. So if you have an SQL query that you write over and over again, save it as a stored procedure, and then just call it to execute it. You can also pass parameters to a stored procedure, so that the stored procedure can act based on the parameter value(s) that is passed.
+A stored procedure is a prepared SQL code that you can save, so the code can be reused 
+over and over again. So if you have an SQL query that you write over and over again, save 
+it as a stored procedure, and then just call it to execute it. You can also pass parameters 
+to a stored procedure, so that the stored procedure can act based on the parameter 
+value(s) that is passed.
 
 ```sql
 CREATE PROCEDURE SelectAllCustomers @City nvarchar(30)
@@ -1025,23 +1000,65 @@ EXEC SelectAllCustomers @City = "London";
 ```
 
 ### User-defined functions
-These are almost like procedures, but a bit different.
-https://intellipaat.com/community/3394/function-vs-stored-procedure-in-sql-server
+A user-defined function (UDF) is a way to extend MySQL with a new function that works like
+a native (built-in) MySQL function such as ABS() or CONCAT(). To create a function, you must 
+have the INSERT privilege for the mysql system database. This is necessary because CREATE 
+FUNCTION adds a row to the `mysql.func` system table that records the function's name, type, 
+and shared library name. \
+Function is compiled and executed every time it is called. And cannot modify the data 
+received as parameters and function must return a value. Functions are similar to Stored
+procedures, but with following differences:
+
+| Function                                                                               | Stored procedure                                                                                      |
+|----------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| The function always returns a value.                                                   | Procedure can return “0” or n values.                                                                 |
+| Functions have only input parameters for it.                                           | Procedures can have output or input parameters.                                                       |
+| You can call Functions from Procedure.                                                 | You can’t call Procedures from a Function.                                                            |
+| You can’t use Transactions in Function.                                                | You can use Transactions in Procedure.                                                                |
+| You can’t use try-catch block in a Function to handle the exception.                   | By using a try-catch block, an exception can be handled in a Procedure.                               |
+| Function can be utilized in a SELECT statement.                                        | You can’t utilize Procedures in a SELECT statement.                                                   |
+| Function allows only SELECT statement in it.                                           | The procedure allows as DML(INSERT/UPDATE/DELETE) as well as a SELECT statement in it.                |
+| The function can be used in the SQL statements anywhere in SELECT/WHERE/HAVING syntax. | Stored Procedures cannot be used in the SQL statements anywhere in the WHERE/HAVING/SELECT statement. |
+
+```sql
+CREATE FUNCTION function_name(param1, param2)
+RETURNS datatype
+BEGIN
+ -- statements
+END
+```
 
 ### Triggers
-Performs operation on data. Fires on event or interval.
+Performs operation on data. Fires on event (`INSERT`, `UPDATE`, etc) or interval.
 ```sql
 CREATE TRIGGER ins_sum BEFORE INSERT ON account
 FOR EACH ROW SET @sum = @sum + NEW.amount;
 ```
 
 ### Cursor
-Allows to process each row of data in stored procedure or function.
-https://www.techonthenet.com/mysql/cursors/declare.php
+Type of SQL variable that holds `SELECT`'s statement resulting set. It might be used to perform
+some logic on dataset in `STORED PROCEDURE` or `FUNCTION`.
 
-## NoSQL
-## Database (practice) :bulb:
-### Persistance
+```sql
+CREATE PROCEDURE demo()
+BEGIN
+  DECLARE a CHAR(16);
+  DECLARE b INT;
+  DECLARE cur1 CURSOR FOR SELECT id,data FROM test.t1;
+
+  OPEN cur1;
+
+  read_loop: LOOP
+    FETCH cur1 INTO a, b;
+      INSERT INTO table1.t3 VALUES (a,b); -- INSERT into different table
+  END LOOP;
+
+  CLOSE cur1;
+END;
+```
+
+## Database (practice)
+### Persistence
 Ability to save state of process without saving a process (e.g. in file).
 
 ### Connection with DB
@@ -1060,23 +1077,22 @@ func main() {
 	defer db.Close()
 }
 ```
-### Transaction [Dupicate]
-https://www.tutorialspoint.com/sql/sql-transactions.htm
 
 ### Data Models
-TODO
+**TODO**
 
-Database management system (DBMS), is a computer program that interacts with a database.
-ACID (atomicity, consistency, isolation, durability) is a set of properties of database transactions intended to guarantee validity even in the event of errors, power failures, etc. 
-CAP theorem:
-In a distributed system, managing consistency(C), availability(A) and partition toleration(P).
+Database management system (DBMS) is a computer program that interacts with a database.
+- ACID (atomicity, consistency, isolation, durability) is a set of properties of database transactions intended to guarantee validity even in the event of errors, power failures, etc. 
+- CAP theorem: consistency(C), availability(A) and partition toleration(P).
 
 # Verification
-## Code quality
-## Refactoring
-## Tests, Trace, Profile :bulb:
+## Tests, Trace, Profile
 ### Benchmark
+**TODO**
+
 ### Profiling concepts
+**TODO**
+
 ### Profiling tools (pprof, http/pprof, profile)
 There are two pprof implementations available:
 
@@ -1099,10 +1115,6 @@ go tool pprof -http=:8080 cpu.pprof
 ### Race conditions
 https://blog.golang.org/race-detector
 
-```go
+```sh
 go run -race main.go # will run race detector. same for build, get, test and install
 ```
-
-# Configuration Management
-## Product builds and Continuous Integration
-## Managing versions
