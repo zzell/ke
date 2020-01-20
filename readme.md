@@ -1118,3 +1118,49 @@ https://blog.golang.org/race-detector
 ```sh
 go run -race main.go # will run race detector. same for build, get, test and install
 ```
+
+
+___
+___
+___
+
+# GAPS
+
+## SQL
+- DDL
+- DML
+- DCL
+- exclude join query
+- aggregations
+- Combining the results of multiple queries
+
+## Algorithms
+- Algorithms complexity
+- Array sorting methods
+- Binary search algorithm
+- Hash table collision,
+
+## Code Quality	
+- Common Software measurements: Coupling, Cohesion, Number of lines of code
+- Program execution time
+- Best practices for code review
+- Code smells
+
+## Tests, Trace, Profile	
+- flappy tests, go example
+- how to perform benchmarks in the right way (CPU, heat, other tools)
+- F.I.R.S.T.
+
+## Cloud-based Deployment Services	
+
+## Product Builds and Continuous Integration
+- Levels of Requirements
+
+## Process Planning (SDLC)
+- Agile software development concept
+
+## Estimation
+- Overestimate vs Underestimate
+
+## Software Requirements	
+- Levels of Requirements
