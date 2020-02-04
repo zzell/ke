@@ -1,3 +1,163 @@
+# GAPS
+
+## SQL
+
+### DDL, DML, DCL
+- DML - Data Manipulation Language.\
+`SELECT` - Retrieves data from a table\
+`INSERT` - Inserts data into a table\
+`UPDATE` - Updates existing data into a table\
+`DELETE` - Deletes all records from a table
+
+- DDL - Data Definition Language.\
+`CREATE` – Creates objects in the database\
+`ALTER` – Alters objects of the database\
+`DROP` – Deletes objects of the database\
+`TRUNCATE` – Deletes all records from a table and resets table identity to initial value.
+
+- DCL - Data Control Language.\
+`GRANT` – Gives user's access privileges to database\
+`REVOKE` – Withdraws user's access privileges to database given with the GRANT command
+
+- TCL - Transactional Control Language.\
+`COMMIT` – Saves work done in transactions\
+`ROLLBACK` – Restores database to original state since the last COMMIT command in transactions\
+`SAVE TRANSACTION` – Sets a savepoint within a transaction
+
+- exclude join query
+- aggregations
+- Combining the results of multiple queries
+- Difference between SQL and NoSQL transactions.
+- Transaction in distributed systems.
+
+### joins 
+#### inner join
+```sql
+SELECT Orders.OrderID, Customers.CustomerName
+FROM Orders
+INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID;
+```
+
+#### left join
+fetches everything from left table and matched from right, 
+and non-matched values will be null
+```sql
+SELECT Customers.CustomerName, Orders.OrderID
+FROM Customers
+LEFT JOIN Orders
+ON Customers.CustomerID=Orders.CustomerID
+ORDER BY Customers.CustomerName;
+
+```
+
+#### right join
+fetches everything from left table and matched values from right, 
+and non-matched values will be null
+
+```sql
+maria=# select * from districts left join bydlos on districts.id = bydlos.district_id where bydlos.id is null;         
+ id | street  | crime | id | name | favourite_beer | district_id 
+----+---------+-------+----+------+----------------+-------------
+  3 | Kyivska |     2 |    |      |                |            
+(1 row)
+```
+
+#### full join
+fetches everything from both tables + matches
+
+```sql
+maria=# select * from bydlos full join districts on bydlos.name = districts.street;
+ id |  name  | favourite_beer | district_id | id |  street   | crime 
+----+--------+----------------+-------------+----+-----------+-------
+    |        |                |             |  1 | Bandery   |     8
+  3 | Kaban  | Baltyke 8      |           2 |    |           |      
+    |        |                |             |  3 | Kyivska   |     2
+    |        |                |             |  2 | Lyubinska |     2
+  1 | Sanya  | Obolon         |           1 |    |           |      
+  2 | Shakal | Chernigivske   |           1 |    |           |      
+(6 rows)
+```
+
+#### union
+
+The UNION operator is used to combine the result-set of two or more SELECT statements.
+
+- Each SELECT statement within UNION must have the same number of columns
+- The columns must also have similar data types
+- The columns in each SELECT statement must also be in the same order
+
+```sql
+SELECT City FROM Customers
+UNION
+SELECT City FROM Suppliers
+ORDER BY City;
+```
+
+#### group by 
+The GROUP BY statement groups rows that have the same values into summary rows, like "find the number of customers in each country".
+
+
+```sql
+SELECT count(CustomerID), Country
+FROM Customers
+GROUP BY Country;
+```
+
+```sql
+SELECT Shippers.ShipperName, COUNT(Orders.OrderID) AS NumberOfOrders FROM Orders
+LEFT JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID
+GROUP BY ShipperName;
+```
+
+#### having
+The HAVING clause was added to SQL because the WHERE keyword could not be used with aggregate functions.
+
+```sql
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country
+HAVING COUNT(CustomerID) > 5;
+```
+
+
+## Algorithms
+- Algorithms complexity
+- Array sorting methods
+- Binary search algorithm
+- Hash table collision,
+
+## Code Quality	
+- Common Software measurements: Coupling, Cohesion, Number of lines of code
+- Program execution time
+- Best practices for code review
+- Code smells
+
+## Tests, Trace, Profile	
+- flappy tests, go example
+- how to perform benchmarks in the right way (CPU, heat, other tools)
+- F.I.R.S.T.
+
+## Cloud-based Deployment Services	
+
+## Product Builds and Continuous Integration
+- Levels of Requirements
+
+## Process Planning (SDLC)
+- Agile software development concept
+
+## Estimation
+- Overestimate vs Underestimate
+
+## Software Requirements	
+- Levels of Requirements
+
+
+___
+___
+___
+
+
+
 # Design
 ## OOD
 ### GoF Design Patterns
@@ -1118,49 +1278,3 @@ https://blog.golang.org/race-detector
 ```sh
 go run -race main.go # will run race detector. same for build, get, test and install
 ```
-
-
-___
-___
-___
-
-# GAPS
-
-## SQL
-- DDL
-- DML
-- DCL
-- exclude join query
-- aggregations
-- Combining the results of multiple queries
-
-## Algorithms
-- Algorithms complexity
-- Array sorting methods
-- Binary search algorithm
-- Hash table collision,
-
-## Code Quality	
-- Common Software measurements: Coupling, Cohesion, Number of lines of code
-- Program execution time
-- Best practices for code review
-- Code smells
-
-## Tests, Trace, Profile	
-- flappy tests, go example
-- how to perform benchmarks in the right way (CPU, heat, other tools)
-- F.I.R.S.T.
-
-## Cloud-based Deployment Services	
-
-## Product Builds and Continuous Integration
-- Levels of Requirements
-
-## Process Planning (SDLC)
-- Agile software development concept
-
-## Estimation
-- Overestimate vs Underestimate
-
-## Software Requirements	
-- Levels of Requirements
