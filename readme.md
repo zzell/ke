@@ -355,9 +355,41 @@ https://en.wikipedia.org/wiki/Linear_probing
 When the hash function causes a collision by mapping a new key to a cell of the hash table that is already occupied by another key, linear probing searches the table for the closest following free location and inserts the new key there. Lookups are performed in the same way, by searching the table sequentially starting at the position given by the hash function, until finding a cell with a matching key or an empty cell.
 
 ## Tests, Trace, Profile	
-- flappy tests, go example
-- how to perform benchmarks in the right way (CPU, heat, other tools)
-- F.I.R.S.T.
+### How to perform benchmarks in the right way
+https://dave.cheney.net/2013/06/30/how-to-write-benchmarks-in-go
+
+```go
+// from fib_test.go
+func BenchmarkFib10(b *testing.B) {
+        // run the Fib function b.N times
+        for n := 0; n < b.N; n++ {
+                Fib(10)
+        }
+}
+```
+Each benchmark must execute the code under test b.N times. The for loop in BenchmarkFib10 will be present in every benchmark function.
+
+```sh
+# run benchmarks:
+go test -bench=.
+
+# flags:
+-benchmem # shows memory allocations
+-benchtime=20s # b.N execution time.
+-cpuprofile=cpu.out # save cpu profile
+-memprofile=mem.out # save memory profile
+```
+
+By default b.N runs benchmark for one second this may be changed with `-benchtime=20s`
+Methods:
+- b.ResetTimer()
+- b.StopTimer()
+- b.StartTimer()
+
+### Flappy (flaky) tests
+A flaky test is a test which could fail or pass for the same configuration.
+- Concurrency
+- Time bombs: Does your test requests for the current time?
 
 ## Code Quality	
 - Common Software measurements: Coupling, Cohesion, Number of lines of code
