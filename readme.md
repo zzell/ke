@@ -1,7 +1,6 @@
 # GAPS
 
 ## SQL
-
 ### DDL, DML, DCL
 - DML - Data Manipulation Language.\
 `SELECT` - Retrieves data from a table\
@@ -30,29 +29,70 @@
 - Difference between SQL and NoSQL transactions.
 - Transaction in distributed systems.
 
-### joins 
-#### inner join
+### Stored procedure
+A stored procedure is a prepared SQL code that you can save, so the code can be reused 
+over and over again. So if you have an SQL query that you write over and over again, save 
+it as a stored procedure, and then just call it to execute it. You can also pass parameters 
+to a stored procedure, so that the stored procedure can act based on the parameter 
+value(s) that is passed.
+
+```sql
+CREATE PROCEDURE SelectAllCustomers @City nvarchar(30)
+AS
+SELECT * FROM Customers WHERE City = @City
+GO;
+
+# usage:
+EXEC SelectAllCustomers @City = "London";
+```
+
+### User-defined functions
+A user-defined function (UDF) is a way to extend MySQL with a new function that works like
+a native (built-in) MySQL function such as ABS() or CONCAT(). To create a function, you must 
+have the INSERT privilege for the mysql system database. This is necessary because CREATE 
+FUNCTION adds a row to the `mysql.func` system table that records the function's name, type, 
+and shared library name. \
+Function is compiled and executed every time it is called. And cannot modify the data 
+received as parameters and function must return a value. Functions are similar to Stored
+procedures, but with following differences:
+
+| Function                                                                               | Stored procedure                                                                                      |
+|----------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| The function always returns a value.                                                   | Procedure can return “0” or n values.                                                                 |
+| Functions have only input parameters for it.                                           | Procedures can have output or input parameters.                                                       |
+| You can call Functions from Procedure.                                                 | You can’t call Procedures from a Function.                                                            |
+| You can’t use Transactions in Function.                                                | You can use Transactions in Procedure.                                                                |
+| You can’t use try-catch block in a Function to handle the exception.                   | By using a try-catch block, an exception can be handled in a Procedure.                               |
+| Function can be utilized in a SELECT statement.                                        | You can’t utilize Procedures in a SELECT statement.                                                   |
+| Function allows only SELECT statement in it.                                           | The procedure allows as DML(INSERT/UPDATE/DELETE) as well as a SELECT statement in it.                |
+| The function can be used in the SQL statements anywhere in SELECT/WHERE/HAVING syntax. | Stored Procedures cannot be used in the SQL statements anywhere in the WHERE/HAVING/SELECT statement. |
+
+```sql
+CREATE FUNCTION function_name(param1, param2)
+RETURNS datatype
+BEGIN
+ -- statements
+END
+```
+
+### Joins 
+#### INNER JOIN
 ```sql
 SELECT Orders.OrderID, Customers.CustomerName
 FROM Orders
 INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID;
 ```
 
-#### left join
-fetches everything from left table and matched from right, 
-and non-matched values will be null
+#### LEFT JOIN
+Fetches everything from left table and matched records from right, 
+and non-matched values will be null.
 ```sql
 SELECT Customers.CustomerName, Orders.OrderID
 FROM Customers
 LEFT JOIN Orders
 ON Customers.CustomerID=Orders.CustomerID
 ORDER BY Customers.CustomerName;
-
 ```
-
-#### right join
-fetches everything from left table and matched values from right, 
-and non-matched values will be null
 
 ```sql
 maria=# select * from districts left join bydlos on districts.id = bydlos.district_id where bydlos.id is null;         
@@ -62,8 +102,13 @@ maria=# select * from districts left join bydlos on districts.id = bydlos.distri
 (1 row)
 ```
 
-#### full join
-fetches everything from both tables + matches
+#### RIGHT JOIN
+The RIGHT JOIN keyword returns all records from the right table (table2), 
+and the matched records from the left table (table1). The result is NULL 
+from the left side, when there is no match.
+
+#### FULL JOIN
+Fetches everything from both tables + matches.
 
 ```sql
 maria=# select * from bydlos full join districts on bydlos.name = districts.street;
@@ -78,8 +123,7 @@ maria=# select * from bydlos full join districts on bydlos.name = districts.stre
 (6 rows)
 ```
 
-#### union
-
+### UNION
 The UNION operator is used to combine the result-set of two or more SELECT statements.
 
 - Each SELECT statement within UNION must have the same number of columns
@@ -93,9 +137,8 @@ SELECT City FROM Suppliers
 ORDER BY City;
 ```
 
-#### group by 
-The GROUP BY statement groups rows that have the same values into summary rows, like "find the number of customers in each country".
-
+### GROUP BY 
+The GROUP BY statement groups rows that have the **same values** into summary rows, like "find the number of customers in each country".
 
 ```sql
 SELECT count(CustomerID), Country
@@ -109,7 +152,7 @@ LEFT JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID
 GROUP BY ShipperName;
 ```
 
-#### having
+### HAVING
 The HAVING clause was added to SQL because the WHERE keyword could not be used with aggregate functions.
 
 ```sql
@@ -119,23 +162,208 @@ GROUP BY Country
 HAVING COUNT(CustomerID) > 5;
 ```
 
+### AGGREGATIONS
+SQL aggregate functions return a single value, calculated from values in a column.
+
+- AVG() - Returns the average value
+- COUNT() - Returns the number of rows
+- FIRST() - Returns the first value
+- LAST() - Returns the last value
+- MAX() - Returns the largest value
+- MIN() - Returns the smallest value
+- SUM() - Returns the sum
+
+### Isolation levels
+**I in ACID**
+
+https://www.geeksforgeeks.org/transaction-isolation-levels-dbms/\
+Isolation levels define the degree to which a transaction must be isolated from the data 
+modifications made by any other transaction in the database system. (Rules for acquiring a LOCK.)
+
+- `dirty reads` - read data while another uncommitted write.
+- `non-repeatable reads` - read data few times in single transaction, 
+but another transaction is committed update between reads.
+- `phantom reads` - same as above, but another transaction commits adding new row. 
+
+
+- **Read uncommitted** permits dirty reads, non repeatable reads and phantom reads.
+- **Read committed** permits non repeatable reads and phantom reads.
+- **Repeatable read** permits only phantom reads.
+- **Serializable** does not permit any read errors.
+
+ To set the global isolation level at server startup, use the `--transaction-isolation=level`
+option on the command line or in an option file.
+
+### Session
+http://go-database-sql.org/connection-pool.html
+
+- Connection pooling means that executing two consecutive statements on a single database might open two connections and execute them separately. It is fairly common for programmers to be confused as to why their code misbehaves. For example, LOCK TABLES followed by an INSERT can block because the INSERT is on a connection that does not hold the table lock.
+- Connections are created when needed and there isn’t a free connection in the pool.
+- By default, there’s no limit on the number of connections. If you try to do a lot of things at once, you can create an arbitrary number of connections. This can cause the database to return an error such as “too many connections.”
+- In Go 1.1 or newer, you can use db.SetMaxIdleConns(N) to limit the number of idle connections in the pool. This doesn’t limit the pool size, though.
+- In Go 1.2.1 or newer, you can use db.SetMaxOpenConns(N) to limit the number of total open connections to the database. Unfortunately, a deadlock bug (fix) prevents db.SetMaxOpenConns(N) from safely being used in 1.2.
+- Connections are recycled rather fast. Setting a high number of idle connections with db.SetMaxIdleConns(N) can reduce this churn, and help keep connections around for reuse.
+- Keeping a connection idle for a long time can cause problems (like in this issue with MySQL on Microsoft Azure). Try db.SetMaxIdleConns(0) if you get connection timeouts because a connection is idle for too long.
+- You can also specify the maximum amount of time a connection may be reused by setting db.SetConnMaxLifetime(duration) since reusing long lived connections may cause network issues. This closes the unused connections lazily i.e. closing expired connection may be deferred.
+
+### Locks
+Lock single ROW!
+```sql
+BEGIN TRAN
+
+   UPDATE your_table WITH (ROWLOCK)
+   SET your_field = a_value
+   WHERE <a predicate>
+
+COMMIT TRAN
+```
+
+A READ|WRITE locks has the following features:
+- The only session that holds the lock of a table can read/write data from the table.
+- Other sessions cannot read data from and write data to the table until the WRITE lock is released.
+
+```sql
+LOCK TABLES table_name [READ | WRITE]
+```
+
+++ **lock on isolation level**
+
+### Transaction
+Ensures that all operations within the work unit are completed successfully. Otherwise, 
+the transaction is aborted at the point of failure and all the previous operations are
+rolled back to their former state.
+
+- `START TRANSACTION` or `BEGIN` start a new transaction.
+- `COMMIT` - to save the changes.
+- `ROLLBACK` - to roll back the changes.
+- `SAVEPOINT` - creates points within the groups of transactions in which to ROLLBACK.
+- `SET TRANSACTION` - Places a name on a transaction.
+
+Database writes info about transaction into persistent log, in case of failure DB reads log backward and revert changes.
+
+#### Transaction in distributed systems
+2PC - Two phase commit protocol
+1) Voting phase: 
+Transaction manager sends transaction to all replicas.
+Replicas write transaction info into their log and send OK.
+
+2) Commit phase:
+When TM Receives OK from all slaves it sends message to commit.
+After every replica commits it sends OK to TM.
+If one replica sent NOT OK - TM sends msg to every replica to rollback.
+
+### ACID
+- Atomicity: Transaction should be executed or or not.
+- Consistency
+- Isolation: Concurrent transaction should't impact to one another.
+- Durability
 
 ## Algorithms
-- Algorithms complexity
-- Array sorting methods
-- Binary search algorithm
-- Hash table collision,
+https://www.bigocheatsheet.com/
+### Big O notation
+Big O notation is used in Computer Science to describe the performance or complexity of an algorithm. 
+
+#### O(1)
+O(1) describes an algorithm that will always execute in the same time (or space) regardless of the size of the input data set.
+```
+bool IsFirstElementNull(IList<string> elements) {
+    return elements[0] == null;
+}
+```
+
+#### O(N)
+O(N) describes an algorithm whose performance will grow linearly and in direct proportion to the size of the input data set.
+```
+bool ContainsValue(IList<string> elements, string value) {
+    foreach (var element in elements)
+    {
+        if (element == value) return true;
+    }
+
+    return false;
+}
+```
+#### O(N^2)
+O(N^2) represents an algorithm whose performance is directly proportional to the square of the size of the input
+data set. This is common with algorithms that involve nested iterations over the data set. 
+Deeper nested iterations will result in O(N3), O(N4) etc.
+
+```
+bool ContainsDuplicates(IList<string> elements) {
+    for (var outer = 0; outer < elements.Count; outer++)
+    {
+        for (var inner = 0; inner < elements.Count; inner++)
+        {
+            // Don't compare with self
+            if (outer == inner) continue;
+
+            if (elements[outer] == elements[inner]) return true;
+        }
+    }
+
+    return false;
+}
+```
+#### O(2^N)
+Usually recursive algorithm. (Exponential)
+O(2^N) denotes an algorithm whose growth doubles with each addition to the input data set.
+```
+int Fibonacci(int number) {
+    if (number <= 1) return number;
+    return Fibonacci(number - 2) + Fibonacci(number - 1);
+}
+```
+
+#### O(log N)
+Doubling the size of the input data set has little effect on its growth as after a single
+iteration of the algorithm the data set will be halved and therefore on a par with an input 
+data set half the size. This makes algorithms like binary search extremely efficient when 
+dealing with large data sets.
+
+### Binary search [O(log N)] (TODO)
+Binary search is an efficient algorithm for finding an item from a sorted list of items.
+
+Binary search is a technique used to search sorted data sets. It works by selecting the middle element of 
+the data set, essentially the median, and compares it against a target value. If the values match it 
+will return success. If the target value is higher than the value of the probe element it will take the 
+upper half of the data set and perform the same operation against it. Likewise, if the target value is 
+lower than the value of the probe element it will perform the operation against the lower half. It will 
+continue to halve the data set with each iteration until the value has been found or until 
+it can no longer split the data set.
+
+### Array sorting methods (TODO: MORE ALGORITHMS)
+#### Quicksort
+1) Peek a pivot (usually last elem in array).
+2) Go through array and compare every element in it with pivot.
+3) If element is bigger - move it to the right of pivot.
+4) If element is smaller - go to the next one.
+5) Recursively repeat on every subarray.
+
+#### Bubble sort
+1) Go from the beginning of array 
+2) Compare two elements
+3) Swap them if needed
+4) Go on
+5) At the end of iteration largest element will be on the right
+6) Repeat
+
+#### Hash function collision resolving
+Linear probing
+
+https://en.wikipedia.org/wiki/Linear_probing
+
+When the hash function causes a collision by mapping a new key to a cell of the hash table that is already occupied by another key, linear probing searches the table for the closest following free location and inserts the new key there. Lookups are performed in the same way, by searching the table sequentially starting at the position given by the hash function, until finding a cell with a matching key or an empty cell.
+
+## Tests, Trace, Profile	
+- flappy tests, go example
+- how to perform benchmarks in the right way (CPU, heat, other tools)
+- F.I.R.S.T.
 
 ## Code Quality	
 - Common Software measurements: Coupling, Cohesion, Number of lines of code
 - Program execution time
 - Best practices for code review
 - Code smells
-
-## Tests, Trace, Profile	
-- flappy tests, go example
-- how to perform benchmarks in the right way (CPU, heat, other tools)
-- F.I.R.S.T.
 
 ## Cloud-based Deployment Services	
 
