@@ -263,6 +263,9 @@ https://www.bigocheatsheet.com/
 ### Big O notation
 Big O notation is used in Computer Science to describe the performance or complexity of an algorithm. 
 
+A binary search only touches a small number of elements. If there's a billion elements, the binary search only touches ~30 of them.
+A quicksort touches every single element, a small number of times. If there's a billion elements, the quick sort touches all of them, about 30 times: about 30 billion touches total.
+
 #### O(1)
 O(1) describes an algorithm that will always execute in the same time (or space) regardless of the size of the input data set.
 ```
@@ -332,14 +335,14 @@ continue to halve the data set with each iteration until the value has been foun
 it can no longer split the data set.
 
 ### Array sorting methods (TODO: MORE ALGORITHMS)
-#### Quicksort
+#### Quicksort [Ω(n log(n)) Θ(n log(n)) O(n^2)]
 1) Peek a pivot (usually last elem in array).
 2) Go through array and compare every element in it with pivot.
 3) If element is bigger - move it to the right of pivot.
 4) If element is smaller - go to the next one.
 5) Recursively repeat on every subarray.
 
-#### Bubble sort
+#### Bubble sort [Ω(n) Θ(n^2) O(n^2)]
 1) Go from the beginning of array 
 2) Compare two elements
 3) Swap them if needed
@@ -386,15 +389,52 @@ Methods:
 - b.StopTimer()
 - b.StartTimer()
 
+### Profiling tools (pprof, http/pprof, profile)
+There are two pprof implementations available:
+
+- net/http/pprof
+- runtime/pprof
+
+``` go
+import "runtime/pprof"
+
+file, _ := os.Create(filepath.Join("cpu.pprof")) // create a file for profiler output
+pprof.StartCPUProfile(file)                      // start CPU Profiler
+pprof.StopCPUProfile()                           // write results to the file
+```
+
+Web view:
+
+``` shell
+go tool pprof -http=:8080 cpu.pprof
+```
+
 ### Flappy (flaky) tests
 A flaky test is a test which could fail or pass for the same configuration.
 - Concurrency
 - Time bombs: Does your test requests for the current time?
 
+to find them:
+```sh
+go test -count=20
+```
+
 ## Code Quality	
-- Common Software measurements: Coupling, Cohesion, Number of lines of code
+### Software metrics
+- Cyclomatic complexity (якійсь там блять граф)
+- Code coverage (percentage of statements called during test)
+- Coupling (the strength of the relationships between modules). Low if preferable.
+- Cohesion In one sense, it is a measure of the strength of relationship between the methods and data of a class and some unifying purpose or concept served by that class. In another sense, it is a measure of the strength of relationship between the class's methods and data themselves. Cohesion is an ordinal type of measurement and is usually described as “high cohesion” or “low cohesion”. Modules with high cohesion tend to be preferable, because high cohesion is associated with several desirable traits of software including robustness, reliability, reusability, and understandability. In contrast, low cohesion is associated with undesirable traits such as being difficult to maintain, test, reuse, or even understand.
 - Program execution time
-- Best practices for code review
+- Program load time (todo)
+
+
+### Best practices for code review
+https://medium.com/palantir/code-review-best-practices-19e02780015f
+
+https://smartbear.com/learn/code-review/best-practices-for-peer-code-review/
+
+
 - Code smells
 
 ## Cloud-based Deployment Services	
