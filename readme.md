@@ -195,6 +195,13 @@ but another transaction is committed update between reads.
 option on the command line or in an option file.
 
 ### Session
+Session is is a temporary and interactive information interchange between two or more communicating devices.
+A session is typically stateful, meaning that at least one of the communicating parties needs to hold current 
+state information and save information about the session history in order to be able to communicate.
+In other words the sessions stores settings like cache of your login information, current transaction isolation 
+level, session level SET values etc.
+
+### Go Session
 http://go-database-sql.org/connection-pool.html
 
 - Connection pooling means that executing two consecutive statements on a single database might open two connections and execute them separately. It is fairly common for programmers to be confused as to why their code misbehaves. For example, LOCK TABLES followed by an INSERT can block because the INSERT is on a connection that does not hold the table lock.
@@ -260,7 +267,10 @@ If one replica sent NOT OK - TM sends msg to every replica to rollback.
 
 ## Algorithms
 https://www.bigocheatsheet.com/
+
 ### Big O notation
+Number of operation - input size
+
 Big O notation is used in Computer Science to describe the performance or complexity of an algorithm. 
 
 A binary search only touches a small number of elements. If there's a billion elements, the binary search only touches ~30 of them.
@@ -286,6 +296,7 @@ bool ContainsValue(IList<string> elements, string value) {
     return false;
 }
 ```
+
 #### O(N^2)
 O(N^2) represents an algorithm whose performance is directly proportional to the square of the size of the input
 data set. This is common with algorithms that involve nested iterations over the data set. 
@@ -307,9 +318,10 @@ bool ContainsDuplicates(IList<string> elements) {
     return false;
 }
 ```
+
 #### O(2^N)
 Usually recursive algorithm. (Exponential)
-O(2^N) denotes an algorithm whose growth doubles with each addition to the input data set.
+O(2^N) denotes an algorithm whose **growth doubles with each addition to the input data set**.
 ```
 int Fibonacci(int number) {
     if (number <= 1) return number;
@@ -351,11 +363,12 @@ it can no longer split the data set.
 6) Repeat
 
 #### Hash function collision resolving
-Linear probing
-
 https://en.wikipedia.org/wiki/Linear_probing
 
-When the hash function causes a collision by mapping a new key to a cell of the hash table that is already occupied by another key, linear probing searches the table for the closest following free location and inserts the new key there. Lookups are performed in the same way, by searching the table sequentially starting at the position given by the hash function, until finding a cell with a matching key or an empty cell.
+Линейное зондирование
+- Linear probing: When the hash function causes a collision by mapping a new key to a cell of the hash table that is already occupied by another key, linear probing searches the table for the closest following free location and inserts the new key there. Lookups are performed in the same way, by searching the table sequentially starting at the position given by the hash function, until finding a cell with a matching key or an empty cell.
+- Quadratic probing 
+- Double hashing
 
 ## Tests, Trace, Profile	
 ### How to perform benchmarks in the right way
@@ -428,29 +441,136 @@ go test -count=20
 - Program execution time
 - Program load time (todo)
 
+```
+govet (vet, vetshadow): Vet examines Go source code and reports suspicious constructs, such as Printf calls whose arguments do not align with the format string [fast: true, auto-fix: false]
+ineffassign: Detects when assignments to existing variables are not used [fast: true, auto-fix: false]
+structcheck: Finds unused struct fields [fast: true, auto-fix: false]
+unused (megacheck): Checks Go code for unused constants, variables, functions and types [fast: false, auto-fix: false]
+
+bodyclose: checks whether HTTP response body is closed successfully [fast: true, auto-fix: false]
+dupl: Tool for code clone detection [fast: true, auto-fix: false]
+funlen: Tool for detection of long functions [fast: true, auto-fix: false]
+gochecknoglobals: Checks that no globals are present in Go code [fast: true, auto-fix: false]
+gochecknoinits: Checks that no init functions are present in Go code [fast: true, auto-fix: false]
+goconst: Finds repeated strings that could be replaced by a constant [fast: true, auto-fix: false]
+gocyclo: Computes and checks the cyclomatic complexity of functions [fast: true, auto-fix: false]
+godox: Tool for detection of FIXME, TODO and other comment keywords [fast: true, auto-fix: false]
+gofmt: Gofmt checks whether code was gofmt-ed. By default this tool runs with -s option to check for code simplification [fast: true, auto-fix: true]
+goimports: Goimports does everything that gofmt does. Additionally it checks unused imports [fast: true, auto-fix: true]
+gomnd: An analyzer to detect magic numbers. [fast: true, auto-fix: false]
+gosec (gas): Inspects source code for security problems [fast: true, auto-fix: false]
+interfacer: Linter that suggests narrower interface types [fast: true, auto-fix: false]
+lll: Reports long lines [fast: true, auto-fix: false]
+maligned: Tool to detect Go structs that would take less memory if their fields were sorted [fast: true, auto-fix: false]
+misspell: Finds commonly misspelled English words in comments [fast: true, auto-fix: true]
+prealloc: Finds slice declarations that could potentially be preallocated [fast: true, auto-fix: false]
+unconvert: Remove unnecessary type conversions [fast: true, auto-fix: false]
+unparam: Reports unused function parameters [fast: true, auto-fix: false]
+```
 
 ### Best practices for code review
 https://medium.com/palantir/code-review-best-practices-19e02780015f
 
 https://smartbear.com/learn/code-review/best-practices-for-peer-code-review/
 
-
-- Code smells
+this one:
+https://www.kevinlondon.com/2015/05/05/code-review-best-practices.html
 
 ## Cloud-based Deployment Services	
+### SaaS (Software as a Service)
+- Software is hosted on a remote server and is always accessible through a web browser over Internet
+- Application is managed from a central location
+- Application users don’t need to worry about hardware, software updates and patches
+- Runs a single instance of software 
+- No need to install software for end users
+(Google apps, Netflix, Webex)
 
-## Product Builds and Continuous Integration
-- Levels of Requirements
+### PaaS (Platform as a Service)
+- PaaS offers a platform for the creation of software For developers.
+- Encapsulates the environment where users can build compile and run their program.
+- Developers work on PaaS platform and concentrate on software application building without having to worry about software updates, operating systems, load balancing, storage, or other details related to infrastructure.
+(AWS, Google app engine)
+
+### IaaS (Infrastructure as a Service)
+IaaS model delivers Cloud Computing infrastructure including servers, storage, network and operating systems an on-demand service.
+For organizations it means that instead of purchasing the whole infrastructure, they simply buy those resources as a service on demand.
+Ideal for organizations which need complete control over their high performing applications
+(AWS EC2)
+
+### Orchestration
+is the automated configuration, coordination, and management of computer systems and software.
+
+### Containerization
+Containerization essentially virtualizes an operating system so applications can be distributed across a single host without requiring their own virtual machine. It does this by giving an app access to a single operating system kernel, which is the core module of the operating system. All containerized apps running on a single machine will run on the same Linux kernel.
 
 ## Process Planning (SDLC)
-- Agile software development concept
+### Agile software development concept
+Agile-Manifesto -  система ценностей
+Agile - комплекс підходів і інженерних практик по керуванню проектами
+
+- Люди и взаимодействия важнее чем процессы и интсрументы
+- Работающий продукт важнее совершенной документации
+- Сотрудничество с заказчиком важнее контрактных обязательств
+- Реакция на изменения важнее следования плану
+
+### Waterfall
+The sequential phases in Waterfall model are −
+- Requirement Gathering and analysis − All possible requirements of the system to be developed are captured in this phase and documented in a requirement specification document.
+- System Design − The requirement specifications from first phase are studied in this phase and the system design is prepared. This system design helps in specifying hardware and system requirements and helps in defining the overall system architecture.
+- Implementation − With inputs from the system design, the system is first developed in small programs called units, which are integrated in the next phase. Each unit is developed and tested for its functionality, which is referred to as Unit Testing.
+- Integration and Testing − All the units developed in the implementation phase are integrated into a system after testing of each unit. Post integration the entire system is tested for any faults and failures.
+- Deployment of system − Once the functional and non-functional testing is done; the product is deployed in the customer environment or released into the market.
+- Maintenance − There are some issues which come up in the client environment. To fix those issues, patches are released. Also to enhance the product some better versions are released. Maintenance is done to deliver these changes in the customer environment.
+
+The major disadvantages of the Waterfall Model are as follows −
+- No working software is produced until late during the life cycle.
+- High amounts of risk and uncertainty.
+- Not a good model for complex and object-oriented projects.
+- Poor model for long and ongoing projects.
+- Not suitable for the projects where requirements are at a moderate to high risk of changing. So, risk and uncertainty is high with this process model.
+- It is difficult to measure progress within stages.
+- Cannot accommodate changing requirements.
+- Adjusting scope during the life cycle can end a project.
+- Integration is done as a "big-bang. at the very end, which doesn't allow identifying any technological or business bottleneck or challenges early.
+
+### Scrum
+Scrum - фреймворк по управлению проектми
+
+(Scrum board, Cards, Epics, Stories, Tasks, Backlogs, Sprint, Increment, etc.)
+(Release planning, Sprint planning, Daily Scrum, Sprint demo, Sprint retrospective)
 
 ## Estimation
-- Overestimate vs Underestimate
+Analogy-based estimations 
+Story based estimations 
+
+### Overestimate vs Underestimate
+The sin of overestimation is probably less serious than that of underestimation, because the team is at least meeting its commitments and not contributing to the chaos that can occur when commitments are missed (particularly when others depend on a team's output for their own work, as is often the case).
+
+Underestimation
+- it is impossible to plan the final product release date
+- the customer is upset
+- the team is dissatisfied, its efficiency and team spirit drops, and everyone is sad: "We have failed the sprint again"
+- conflicts within the team may arise, with people saying "I managed to do my tasks, but we failed because of him/her”
+- everyone gets stressed and fatigued
+
+### Estimation methods
+1. Planning Poker All participants use numbered playing cards and estimate the items. Voting is done anonymous and discussion is raised when there are large differences. Voting is repeated till the whole team reached consensus about the accurate estimation. Planning poker works well when you have to estimate a relative small number of items (max 10) in a small team (5-8 people). Tip: try to keep the voting between affordable numbers.  Maximize the highest card to 13 points. More on planning poker via this link. 
+2. T-Shirt Sizes This is a perfect technique for estimating a large backlog of relative large items. Especially when you have several concurrent scrum teams working on the same product. Items are estimated into t-shirt sizes: XS, S, M, L, XL. The decision about the size is based on an open and mutual collaborative discussion. This method is an informal and quick way to get an rough feeling about the total size of your backlog. More about T-shirt size estimation is here.
+3. Dot Voting When you are faced with a relative small set of items and in need of a super simple and effective technique to estimate you can use Dot Voting. This method has originated form decision making and you can use it for estimating. Each person gets a small number of small stickers and can choose to vote for the individual items. The more dots is an indicator of a bigger size. Works well in both small and large group. You have to limit the number of estimated items. More on dot voting here.
+4. The Bucket System Much faster than planning poker is the Bucket System. This system is a good alternative when estimating a large number of items with a large group of participants. Create several buckets in the sequence of planning poker. The group estimates the items by placing them in these “buckets”. Buckets are usually different sheets of brown paper where you can place the sticky note with the item. But you can also use actual baskets to limit discussion about already processed items. More on the bucket method here.
+5. Large/Uncertain/Small A very fast method of rough estimating is the Large/Uncertain/Small method. The team is being asked to place the items in one of these categories. The first step is to categorize the obvious items in the two extreme categories. Next the group can discuss the more complex items. This is actually a simplification of the bucket system. The system is especially good to use in smaller groups with comparable items. Next you can assign sizes to these 3 categories.
+6. Affinity Mapping This method is based on finding similarities in the estimated items. The team is asked to group them together. Best way is to execute this is a visual way and order them form small groups to large. It works best with a small group of people and a relative small number of items. You can assign estimation numbers to the different groups. More information about Affinity Mapping.
+7. Ordering method This is an exercise where you get an accurate image on the relative size of items. This works best in a small group of expert. All items are placed in random order on a scale label ranging from low to high. Every participant is being asked to move one item on the scale. Each move is just one spot lower or one spot higher or pass the turn. This continues till no team member want to move items and passes their turn. The ordering protocol is a method of getting fine grained size estimates. Works best with a relative small group of people and a large number of items.
 
 ## Software Requirements	
-- Levels of Requirements
+### Levels of Requirements
+1. Business Level: defines the business problems or opportunities about the product. Business requirements define why the software product is being developed. They are the objectives of the customer requesting the development of the software.
+2. User Level: defines functionality of the software product from the user’s perspective. They define what the software has to do in order for the users to accomplish their objectives.
+3. Functional Level: define the software functionality must be built into the product to enable users to accomplish their tasks. This includes the entire external, database, functional/non-functional requirements.
 
+Most common requirements risks 
+Characteristics of Excellent Requirements 
+Benefits from a High-Quality Requirements Process 
 
 ___
 ___
