@@ -23,12 +23,6 @@
 `ROLLBACK` – Restores database to original state since the last COMMIT command in transactions\
 `SAVE TRANSACTION` – Sets a savepoint within a transaction
 
-- exclude join query
-- aggregations
-- Combining the results of multiple queries
-- Difference between SQL and NoSQL transactions.
-- Transaction in distributed systems.
-
 ### Stored procedure
 A stored procedure is a prepared SQL code that you can save, so the code can be reused 
 over and over again. So if you have an SQL query that you write over and over again, save 
@@ -469,12 +463,27 @@ unparam: Reports unused function parameters [fast: true, auto-fix: false]
 ```
 
 ### Best practices for code review
-https://medium.com/palantir/code-review-best-practices-19e02780015f
-
 https://smartbear.com/learn/code-review/best-practices-for-peer-code-review/
 
-this one:
 https://www.kevinlondon.com/2015/05/05/code-review-best-practices.html
+
+- Check lists
+- SOLID + software metrics above
+- Efficiency
+- Potential bugs
+- Naming convention
+- Function, class, file length
+- Useful comments
+- Useless commented code
+- Readability
+- Unit tests
+
+- Review own code first
+- Commit messages
+
+- max 400 lines at a time (the brain can only effectively process such amount of information)
+- don't rush
+- do not review more than 60 minutes at a time
 
 ## Cloud-based Deployment Services	
 ### SaaS (Software as a Service)
@@ -498,10 +507,13 @@ Ideal for organizations which need complete control over their high performing a
 (AWS EC2)
 
 ### Orchestration
-is the automated configuration, coordination, and management of computer systems and software.
+Automated configuration, coordination, and management of computer systems and software.
 
 ### Containerization
-Containerization essentially virtualizes an operating system so applications can be distributed across a single host without requiring their own virtual machine. It does this by giving an app access to a single operating system kernel, which is the core module of the operating system. All containerized apps running on a single machine will run on the same Linux kernel.
+Containerization essentially virtualizes an operating system so applications can be distributed across a single
+host without requiring their own virtual machine. It does this by giving an app access to a single operating 
+system kernel, which is the core module of the operating system. All containerized apps running on a single 
+machine will run on the same Linux kernel.
 
 ## Process Planning (SDLC)
 ### Agile software development concept
@@ -540,8 +552,14 @@ Scrum - фреймворк по управлению проектми
 (Release planning, Sprint planning, Daily Scrum, Sprint demo, Sprint retrospective)
 
 ## Estimation
-Analogy-based estimations 
-Story based estimations 
+### Estimation methods
+1. Planning Poker All participants use numbered playing cards and estimate the items. Voting is done anonymous and discussion is raised when there are large differences. Voting is repeated till the whole team reached consensus about the accurate estimation. Planning poker works well when you have to estimate a relative small number of items (max 10) in a small team (5-8 people). Tip: try to keep the voting between affordable numbers.  Maximize the highest card to 13 points. More on planning poker via this link. 
+2. T-Shirt Sizes This is a perfect technique for estimating a large backlog of relative large items. Especially when you have several concurrent scrum teams working on the same product. Items are estimated into t-shirt sizes: XS, S, M, L, XL. The decision about the size is based on an open and mutual collaborative discussion. This method is an informal and quick way to get an rough feeling about the total size of your backlog. More about T-shirt size estimation is here.
+3. Dot Voting When you are faced with a relative small set of items and in need of a super simple and effective technique to estimate you can use Dot Voting. This method has originated form decision making and you can use it for estimating. Each person gets a small number of small stickers and can choose to vote for the individual items. The more dots is an indicator of a bigger size. Works well in both small and large group. You have to limit the number of estimated items. More on dot voting here.
+4. The Bucket System Much faster than planning poker is the Bucket System. This system is a good alternative when estimating a large number of items with a large group of participants. Create several buckets in the sequence of planning poker. The group estimates the items by placing them in these “buckets”. Buckets are usually different sheets of brown paper where you can place the sticky note with the item. But you can also use actual baskets to limit discussion about already processed items. More on the bucket method here.
+5. Large/Uncertain/Small A very fast method of rough estimating is the Large/Uncertain/Small method. The team is being asked to place the items in one of these categories. The first step is to categorize the obvious items in the two extreme categories. Next the group can discuss the more complex items. This is actually a simplification of the bucket system. The system is especially good to use in smaller groups with comparable items. Next you can assign sizes to these 3 categories.
+6. Affinity Mapping This method is based on finding similarities in the estimated items. The team is asked to group them together. Best way is to execute this is a visual way and order them form small groups to large. It works best with a small group of people and a relative small number of items. You can assign estimation numbers to the different groups. More information about Affinity Mapping.
+7. Ordering method This is an exercise where you get an accurate image on the relative size of items. This works best in a small group of expert. All items are placed in random order on a scale label ranging from low to high. Every participant is being asked to move one item on the scale. Each move is just one spot lower or one spot higher or pass the turn. This continues till no team member want to move items and passes their turn. The ordering protocol is a method of getting fine grained size estimates. Works best with a relative small group of people and a large number of items.
 
 ### Overestimate vs Underestimate
 The sin of overestimation is probably less serious than that of underestimation, because the team is at least meeting its commitments and not contributing to the chaos that can occur when commitments are missed (particularly when others depend on a team's output for their own work, as is often the case).
@@ -552,15 +570,6 @@ Underestimation
 - the team is dissatisfied, its efficiency and team spirit drops, and everyone is sad: "We have failed the sprint again"
 - conflicts within the team may arise, with people saying "I managed to do my tasks, but we failed because of him/her”
 - everyone gets stressed and fatigued
-
-### Estimation methods
-1. Planning Poker All participants use numbered playing cards and estimate the items. Voting is done anonymous and discussion is raised when there are large differences. Voting is repeated till the whole team reached consensus about the accurate estimation. Planning poker works well when you have to estimate a relative small number of items (max 10) in a small team (5-8 people). Tip: try to keep the voting between affordable numbers.  Maximize the highest card to 13 points. More on planning poker via this link. 
-2. T-Shirt Sizes This is a perfect technique for estimating a large backlog of relative large items. Especially when you have several concurrent scrum teams working on the same product. Items are estimated into t-shirt sizes: XS, S, M, L, XL. The decision about the size is based on an open and mutual collaborative discussion. This method is an informal and quick way to get an rough feeling about the total size of your backlog. More about T-shirt size estimation is here.
-3. Dot Voting When you are faced with a relative small set of items and in need of a super simple and effective technique to estimate you can use Dot Voting. This method has originated form decision making and you can use it for estimating. Each person gets a small number of small stickers and can choose to vote for the individual items. The more dots is an indicator of a bigger size. Works well in both small and large group. You have to limit the number of estimated items. More on dot voting here.
-4. The Bucket System Much faster than planning poker is the Bucket System. This system is a good alternative when estimating a large number of items with a large group of participants. Create several buckets in the sequence of planning poker. The group estimates the items by placing them in these “buckets”. Buckets are usually different sheets of brown paper where you can place the sticky note with the item. But you can also use actual baskets to limit discussion about already processed items. More on the bucket method here.
-5. Large/Uncertain/Small A very fast method of rough estimating is the Large/Uncertain/Small method. The team is being asked to place the items in one of these categories. The first step is to categorize the obvious items in the two extreme categories. Next the group can discuss the more complex items. This is actually a simplification of the bucket system. The system is especially good to use in smaller groups with comparable items. Next you can assign sizes to these 3 categories.
-6. Affinity Mapping This method is based on finding similarities in the estimated items. The team is asked to group them together. Best way is to execute this is a visual way and order them form small groups to large. It works best with a small group of people and a relative small number of items. You can assign estimation numbers to the different groups. More information about Affinity Mapping.
-7. Ordering method This is an exercise where you get an accurate image on the relative size of items. This works best in a small group of expert. All items are placed in random order on a scale label ranging from low to high. Every participant is being asked to move one item on the scale. Each move is just one spot lower or one spot higher or pass the turn. This continues till no team member want to move items and passes their turn. The ordering protocol is a method of getting fine grained size estimates. Works best with a relative small group of people and a large number of items.
 
 ## Software Requirements	
 ### Levels of Requirements
