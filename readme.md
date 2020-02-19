@@ -187,7 +187,7 @@ modifications made by any other transaction in the database system. (Rules for a
 
 - `dirty reads` - read data while another uncommitted write.
 - `non-repeatable reads` - read data few times in single transaction, 
-but another transaction is committed update between reads.
+but another transaction is committed update between reads. Тр1 читає значення, тр2 комітає, тр1 апдейтить і комітає. апдейт тр2 губиться
 - `phantom reads` - same as above, but another transaction commits adding new row. 
 
 
