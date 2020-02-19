@@ -167,6 +167,17 @@ SQL aggregate functions return a single value, calculated from values in a colum
 - MIN() - Returns the smallest value
 - SUM() - Returns the sum
 
+#### HEAVY METAL
+https://www.w3schools.com/sql/trysql.asp?filename=trysql_select_all
+```sql
+SELECT Categories.CategoryID, Products.ProductID, AVG(Products.Price) as AveragePrice
+FROM Categories
+LEFT JOIN Products
+ON Products.CategoryID = Categories.CategoryID
+GROUP BY Categories.CategoryID
+HAVING AveragePrice > 30
+```
+
 ### Isolation levels
 **I in ACID**
 
