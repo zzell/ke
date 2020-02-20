@@ -367,6 +367,17 @@ it can no longer split the data set.
 5) At the end of iteration largest element will be on the right
 6) Repeat
 
+#### Merge sort [Ω(n log(n)) Θ(n log(n)) O(n log(n))]
+Recursie, divide and conquer. (Разделяй и властвуй)
+
+1) Divide array on half.
+2) Repeat recursively.
+3) Compare items.
+4) Rearrange them in right order.
+5) Return subarray.
+6) Compare two subarrays and rearrange them in right order.
+7) Return subarray.
+
 #### Hash function collision resolving
 https://en.wikipedia.org/wiki/Linear_probing
 
