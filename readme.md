@@ -1,5 +1,5 @@
 # Computer Science
-### Big O notation
+## Big O notation
 https://www.bigocheatsheet.com/
 
 Describes performance or complexity of an algorithm in the worst case. Relation between 
@@ -10,73 +10,73 @@ elements, the binary search only touches ~30 of them. A quicksort touches every
 single element, a small number of times. If there's a billion elements, 
 the quick sort touches all of them, about 30 times: about 30 billion touches total.
 
-- Complexities:
-    - **O(1)** describes an algorithm that will always execute in the same time 
-    (or space) regardless of the size of the input data set. (map)
+### Complexities:
+- **O(1)** describes an algorithm that will always execute in the same time 
+(or space) regardless of the size of the input data set. (map)
+  
+- **O(N)** describes an algorithm which performance will grow linearly and in direct 
+proportion to the size of the input data set. (loop)
+
+- **O(N^2)** represents an algorithm whose performance is directly proportional to the 
+square of the size of the input data set. This is common with algorithms that involve 
+nested iterations over the data set. Deeper nested iterations will result in O(N^3), O(N^4) etc.
+  
+- **O(2^N)** exponential, usually recursive algorithm whose size **growth doubles with 
+each addition to the input data set**.
+
+- **O(log N)** doubling the size of the input data set has little effect on its growth as after a single
+iteration of the algorithm the data set will be halved and therefore on a par with an input 
+data set half the size. This makes algorithms like binary search extremely efficient when 
+dealing with large data sets.
+
+- **O(N * Log N)** describes an algorithm that contains O(N log N) nested in O(N) loop.
+
+- **O(N!)** permutations algorithms.
       
-    - **O(N)** describes an algorithm which performance will grow linearly and in direct 
-    proportion to the size of the input data set. (loop)
-    
-    - **O(N^2)** represents an algorithm whose performance is directly proportional to the 
-    square of the size of the input data set. This is common with algorithms that involve 
-    nested iterations over the data set. Deeper nested iterations will result in O(N^3), O(N^4) etc.
       
-    - **O(2^N)** exponential, usually recursive algorithm whose size **growth doubles with 
-    each addition to the input data set**.
+### Sort algorithms (most popular)
+**Quicksort** [O(n log(n)) Θ(n log(n)) O(n^2)] \
+https://www.programiz.com/dsa/quick-sort
 
-    - **O(log N)** doubling the size of the input data set has little effect on its growth as after a single
-    iteration of the algorithm the data set will be halved and therefore on a par with an input 
-    data set half the size. This makes algorithms like binary search extremely efficient when 
-    dealing with large data sets.
-    
-    - **O(N * Log N)** describes an algorithm that contains O(N log N) nested in O(N) loop.
-    
-    - **O(N!)** permutations algorithms.
-      
-      
-- Sort algorithms (most popular):
-    - **Quicksort** [O(n log(n)) Θ(n log(n)) O(n^2)] https://www.programiz.com/dsa/quick-sort
-        - Peek a pivot (usually last elem in array).
-        - Go through array and compare every element in it with pivot.
-        - Pick first bigger element and remember it position (pointer).
-        - Keep going.
-        - If element is bigger - do nothing.
-        - If element is smaller - swap it with the pointer.
-        - Pick next pointer.
-        - If last element - swap pivot with the pointer.
-        - Recursively repeat on right and left sub-arrays.
+1) Peek a pivot (usually last elem in array).
+2) Go through array and compare every element in it with pivot.
+3) Pick first bigger element and remember it position (pointer).
+4) Keep going.
+5) If element is bigger - do nothing.
+6) If element is smaller - swap it with the pointer.
+7) Pick next pointer.
+8) If last element - swap pivot with the pointer.
+9) Recursively repeat on right and left sub-arrays.
 
-    -  Bubble sort [O(n) Θ(n^2) O(n^2)]
-        - Go from the beginning of array 
-        - Compare two elements
-        - Swap them if needed
-        - Go on
-        - At the end of iteration the largest element will be on the right
-        - Repeat
+**Bubble sort** [O(n) Θ(n^2) O(n^2)]
+1) Go from the beginning of array 
+2) Compare two elements
+3) Swap them if needed
+4) Go on
+5) At the end of iteration the largest element will be on the right
+6) Repeat
 
-    - **Merge sort** [O(n log(n)) Θ(n log(n)) O(n log(n))]
-        - Divide array on half.
-        - Repeat recursively.
-        - Compare items.
-        - Rearrange them in right order.
-        - Return subarray.
-        - Compare two subarrays and rearrange them in right order.
-        - Return subarray.
-        
-        ![big_o](images/big_o_merge_sort.png)
+**Merge sort** [O(n log(n)) Θ(n log(n)) O(n log(n))]
+- Divide array on half.
+- Repeat recursively.
+- Compare items.
+- Rearrange them in right order.
+- Return subarray.
+- Compare two subarrays and rearrange them in right order.
+- Return subarray.
 
-- Search:
-    - **Binary search [O(log N)]** is a technique used to search sorted data sets. It works by selecting the middle element of 
-    the data set, essentially the median, and compares it against a target value. If the values match it 
-    will return success. If the target value is higher than the value of the probe element it will take the 
-    upper half of the data set and perform the same operation against it. Likewise, if the target value is 
-    lower than the value of the probe element it will perform the operation against the lower half. It will 
-    continue to halve the data set with each iteration until the value has been found or until 
-    it can no longer split the data set.
+![big_o](images/big_o_merge_sort.png)
 
-    ![big_o](images/big_o_binary_search.png)
+### Search
+**Binary search [O(log N)]** is a technique used to search sorted data sets. It works by selecting the middle element of 
+the data set, essentially the median, and compares it against a target value. If the values match it 
+will return success. If the target value is higher than the value of the probe element it will take the 
+upper half of the data set and perform the same operation against it. Likewise, if the target value is 
+lower than the value of the probe element it will perform the operation against the lower half. It will 
+continue to halve the data set with each iteration until the value has been found or until 
+it can no longer split the data set.
 
-<!-- 
+![big_o](images/big_o_binary_search.png)
 
 ### OOP
 - Inheritance
