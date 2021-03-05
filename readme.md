@@ -1783,16 +1783,14 @@ Cons:
 
 ### ACID
 - Atomicity: \
-  Atomicity guarantees that each transaction is treated as a single "unit", which either
-succeeds completely, or fails completely: if any of the statements constituting a transaction 
-fails to complete, the entire transaction fails and the database is left unchanged. 
-- Consistency:
+  Atomicity guarantees that each transaction is treated as a single "unit", which either succeeds completely, or fails completely: if any of the statements constituting a transaction fails to complete, the entire transaction fails and the database is left unchanged. 
+- Consistency: \
+  Consistency means that data moves from one correct state to another correct state, with no possibility that readers could view different values that don’t make sense together.
 - Isolation: \
-  Concurrent transaction should't impact to one another.
+  Concurrent transaction should't impact to one another. That is, if two different transactions attempt to modify the same data at the same time, then one of
+them will have to wait for the other to complete.
 - Durability: \
-  Durability guarantees that once a transaction has been committed, it will remain committed even in
-the case of a system failure (e.g., power outage or crash). This usually means that completed 
-transactions (or their effects) are recorded in non-volatile memory.
+  Durability guarantees that once a transaction has been committed, it will remain committed even in the case of a system failure (e.g., power outage or crash). This usually means that completed transactions (or their effects) are recorded in non-volatile memory.
 
 <!-- 
 
