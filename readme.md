@@ -401,8 +401,30 @@ https://blog.golang.org/race-detector
 go run -race main.go # will run race detector. same for build, get, test and install
 ```
 
-### Deadlock (TODO)
+### Deadlock
+A deadlock happens when a group of goroutines are waiting for each other and none of them is able to proceed.
+```go
+func main() {
+	ch := make(chan int)
+	ch <- 1
+}
+```
+So, here we are trying to push to the chan, but there is no other goroutines that are able to read those message.
+```go
+func main() {
+	ch := make(chan int)
+	<- ch
+}
+```
+Here we are trying to read from channel but there is no goroutines that are able to write to the channel.
 
+A goroutine can get stuck
+- either because it’s waiting for a channel or
+- because it is waiting for one of the locks in the sync package.
+
+Common reasons are that
+- no other goroutine has access to the channel or the lock,
+- a group of goroutines are waiting for each other and none of them is able to proceed.
 ### Mutex & RWMutex (TODO)
 
 ### sync/atomic (TODO)
