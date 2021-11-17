@@ -403,20 +403,29 @@ go run -race main.go # will run race detector. same for build, get, test and ins
 
 ### Deadlock
 A deadlock happens when a group of goroutines are waiting for each other and none of them is able to proceed.
-```go
-func main() {
-	ch := make(chan int)
-	ch <- 1
-}
-```
+
 So, here we are trying to push to the chan, but there is no other goroutines that are able to read those message.
 ```go
 func main() {
-	ch := make(chan int)
-	<- ch
+	ch := make(chan struct{})
+	ch <- struct{}{}
 }
 ```
 Here we are trying to read from channel but there is no goroutines that are able to write to the channel.
+```go
+func main() {
+	ch := make(chan struct{})
+	<- ch
+}
+```
+In case we are using buffered channel deadlock is going to be caused when we are reaching channel size.
+```go
+func main() {
+    ch := make(chan struct{}, 1)
+    ch <- struct{}{}
+    ch <- struct{}{}
+}
+```
 
 A goroutine can get stuck
 - either because it’s waiting for a channel or
