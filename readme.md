@@ -418,6 +418,23 @@ func main() {
 	<- ch
 }
 ```
+This reading behavior could be fixed in only one way (by using select statement with default case)
+```go
+func main() {
+    c := make(chan struct{})
+    go func(c chan <- struct{}){
+        time.Sleep(time.Second*2)
+        c <- struct{}{}	
+    }(c)
+    fmt.Println(<-c)
+    select {
+        case <-c:
+            fmt.Println("Isn't got here")
+        default:
+            fmt.Println("Got here")
+	}
+}
+```
 In case we are using buffered channel deadlock is going to be caused when we are reaching channel size.
 ```go
 func main() {
