@@ -454,7 +454,7 @@ Common reasons are that
 ### Mutex & RWMutex (TODO)
 
 #### Mutex
-Mutex is a mechanism that enforces limits on access to a resource when
+`Mutex` is a mechanism that enforces limits on access to a resource when
 there are many threads of execution.
 
 Imagine next situation when we are trying to write and read map from different goroutines.
