@@ -514,7 +514,7 @@ func main() {
 #### RWMutex
 `RWMutex` has the same logic as Mutex, but with only one difference - `it locks reading
 only when someone writes to the same memory at the same moment`
-(in case we are only reading it isn't locking any operation), so `it's more efficient`.
+(in case we are only read it isn't locks any operation), so `it's more efficient`.
 ```go
 func main() {
     m := map[int]int{}
