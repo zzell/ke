@@ -401,9 +401,146 @@ https://blog.golang.org/race-detector
 go run -race main.go # will run race detector. same for build, get, test and install
 ```
 
-### Deadlock (TODO)
+### Deadlock
+A deadlock happens when a group of goroutines are waiting for each other and none of them is able to proceed.
 
+So, here we are trying to push to the chan, but there is no other goroutines that are able to read those message.
+```go
+func main() {
+	ch := make(chan struct{})
+	ch <- struct{}{}
+}
+```
+Here we are trying to read from channel but there is no goroutines that are able to write to the channel.
+```go
+func main() {
+	ch := make(chan struct{})
+	<- ch
+}
+```
+This reading behavior could be fixed in only one way (by using select statement with default case)
+```go
+func main() {
+    c := make(chan struct{})
+    go func(c chan <- struct{}){
+        time.Sleep(time.Second*2)
+        c <- struct{}{}	
+    }(c)
+    fmt.Println(<-c)
+    select {
+        case <-c:
+            fmt.Println("Isn't got here")
+        default:
+            fmt.Println("Got here")
+	}
+}
+```
+In case we are using buffered channel deadlock is going to be caused when we are reaching channel size.
+```go
+func main() {
+    ch := make(chan struct{}, 1)
+    ch <- struct{}{}
+    ch <- struct{}{}
+}
+```
+
+A goroutine can get stuck
+- either because it’s waiting for a channel or
+- because it is waiting for one of the locks in the sync package.
+
+Common reasons are that
+- no other goroutine has access to the channel or the lock,
+- a group of goroutines are waiting for each other and none of them is able to proceed.
 ### Mutex & RWMutex (TODO)
+
+#### Mutex
+`Mutex` is a mechanism that enforces limits on access to a resource when
+there are many threads of execution.
+
+Imagine next situation when we are trying to write and read map from different goroutines.
+```go
+func main() {
+    m := map[int]int{}
+    go func(m map[int]int) {
+        for {
+            m[0] = 1
+        }
+    }(m)
+    go func(m map[int]int) {
+        for {
+            for _, v := range m {
+                fmt.Println(v)
+            }
+        }
+    }(m)
+
+    // stop program from exiting, must be killed
+    block := make(chan struct{})
+    <-block
+}
+```
+In the result we are retrieving `fatal error: concurrent map iteration and map write`.
+Panic was caused by reading and writing to the same map`Data race`
+because map doesn't have concurrent read/write or write/write access from the box.
+
+We could avoid this behaviour by using `Mutex`
+```go
+func main() {
+    m := map[int]int{}
+    mu := &sync.Mutex{}
+    go func(m map[int]int, mu *sync.Mutex) {
+        for {
+            mu.Lock()
+            m[0] = 1
+            mu.Unlock()
+        }
+    }(m, mu)
+    go func(m map[int]int, mu *sync.Mutex) {
+        for {
+            mu.Lock()
+            for _, v := range m {
+                fmt.Println(v)
+            }
+            mu.Unlock()
+        }
+    }(m, mu)
+
+    // stop program from exiting, must be killed
+    block := make(chan struct{})
+    <-block
+}
+```
+
+#### RWMutex
+`RWMutex` has the same logic as Mutex, but with only one difference - `it locks reading
+only when someone writes to the same memory at the same moment`
+(in case we are only read it isn't locks any operation), so `it's more efficient`.
+```go
+func main() {
+    m := map[int]int{}
+    mu := &sync.RWMutex{}
+    go func(m map[int]int, mu *sync.RWMutex) {
+        for {
+            mu.Lock()
+            m[0] = 1
+            mu.Unlock()
+        }
+    }(m, mu)
+    go func(m map[int]int, mu *sync.RWMutex) {
+        for {
+            mu.RLock()
+            for _, v := range m {
+                fmt.Println(v)
+            }
+            mu.RUnlock()
+        }
+    }(m, mu)
+
+    // stop program from exiting, must be killed
+    block := make(chan struct{})
+    <-block
+}
+```
 
 ### sync/atomic (TODO)
 
