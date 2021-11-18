@@ -453,6 +453,95 @@ Common reasons are that
 - a group of goroutines are waiting for each other and none of them is able to proceed.
 ### Mutex & RWMutex (TODO)
 
+#### Mutex
+Mutex is a mechanism that enforces limits on access to a resource when
+there are many threads of execution.
+
+Imagine next situation when we are trying to write and read map from different goroutines.
+```go
+func main() {
+    m := map[int]int{}
+    go func(m map[int]int) {
+        for {
+            m[0] = 1
+        }
+    }(m)
+    go func(m map[int]int) {
+        for {
+            for _, v := range m {
+                fmt.Println(v)
+            }
+        }
+    }(m)
+
+    // stop program from exiting, must be killed
+    block := make(chan struct{})
+    <-block
+}
+```
+In the result we are retrieving `fatal error: concurrent map iteration and map write`.
+Panic was caused by reading and writing to the same map`Data race`
+because map doesn't have concurrent read/write or write/write access from the box.
+
+We could avoid this behaviour by using `Mutex`
+```go
+func main() {
+    m := map[int]int{}
+    mu := &sync.Mutex{}
+    go func(m map[int]int, mu *sync.Mutex) {
+        for {
+            mu.Lock()
+            m[0] = 1
+            mu.Unlock()
+        }
+    }(m, mu)
+    go func(m map[int]int, mu *sync.Mutex) {
+        for {
+            mu.Lock()
+            for _, v := range m {
+                fmt.Println(v)
+            }
+            mu.Unlock()
+        }
+    }(m, mu)
+
+    // stop program from exiting, must be killed
+    block := make(chan struct{})
+    <-block
+}
+```
+
+#### RWMutex
+`RWMutex` has the same logic as Mutex, but with only one difference - `it locks reading
+only when someone writes to the same memory at the same moment`
+(in case we are only reading it isn't locking any operation), so `it's more efficient`.
+```go
+func main() {
+    m := map[int]int{}
+    mu := &sync.RWMutex{}
+    go func(m map[int]int, mu *sync.RWMutex) {
+        for {
+            mu.Lock()
+            m[0] = 1
+            mu.Unlock()
+        }
+    }(m, mu)
+    go func(m map[int]int, mu *sync.RWMutex) {
+        for {
+            mu.RLock()
+            for _, v := range m {
+                fmt.Println(v)
+            }
+            mu.RUnlock()
+        }
+    }(m, mu)
+
+    // stop program from exiting, must be killed
+    block := make(chan struct{})
+    <-block
+}
+```
+
 ### sync/atomic (TODO)
 
 ### Flappy (flaky) tests
