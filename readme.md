@@ -375,8 +375,7 @@ capacity(length of the actual array) for a new slice calculates in the next way.
 - `old.cap < 256` => `new.cap = old.cap*2`
 - `old.cap >= 256` => `new.cap = (old.cap*2 + 3*256)/4`
 
-<a href="https://ueokande.github.io/go-slice-tricks/" target="_blank">Slice tricks</a>
-
+[Slice tricks](https://ueokande.github.io/go-slice-tricks/)
 
 
 ## Channels
