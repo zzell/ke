@@ -359,6 +359,25 @@ Todo:
 - garbage collector
 - memory model
 
+## Slice
+`Slice` is a pointer to the actual array. It has 2 characteristics - `length and capacity`.
+
+```go
+type slice struct {
+    array unsafe.Pointer // pointer to the array
+    len   int // length of the slice
+    cap   int // length of actual array to which we are pointing
+}
+```
+When length reach capacity and we try to add one more element to the slice
+go creates new array with more length and points it to slice,
+capacity(length of the actual array) for a new slice calculates in the next way.
+- `old.cap < 256` => `new.cap = old.cap*2`
+- `old.cap >= 256` => `new.cap = (old.cap*2 + 3*256)/4`
+
+[Slice tricks](https://ueokande.github.io/go-slice-tricks/)
+
+
 ## Channels
 ```go
 type hchan struct {
