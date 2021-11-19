@@ -360,7 +360,7 @@ Todo:
 - memory model
 
 ## Slice
-`Slice` is a pointer to the actual array. It has 2 characteristics - `length and capacity`.
+`Slice` is a pointer to the actual array. It has 2 characteristics - `length` and `capacity`.
 
 ```go
 type slice struct {
