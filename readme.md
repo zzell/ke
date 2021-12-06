@@ -778,12 +778,25 @@ function for instance), then the comparison fails with a panic.
 A nil interface value, which contains no value at all, is not the same as an interface value
 containing a pointer that happens to be nil:
 
-``` go
-type xi interface{}
-var a *string = nil
-var x xi = a
-fmt.Println(x == nil) // false
+``` go 
+func foo() error {
+    var err error // nil
+    return err
+}
+
+err := foo()
+if err == nil {...} // true
 ```
+``` go
+func foo() error {
+    var err *os.PathError // nil
+    return err
+}
+
+err := foo()
+if err == nil {...} // false
+```
+![img.png](img.png)
 
 ## Maps
 https://dave.cheney.net/2018/05/29/how-the-go-runtime-implements-maps-efficiently-without-generics \
