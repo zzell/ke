@@ -796,7 +796,7 @@ func foo() error {
 err := foo()
 if err == nil {...} // false
 ```
-![img.png](img.png)
+![img.png](images/interface_struct.png)
 
 ## Maps
 https://dave.cheney.net/2018/05/29/how-the-go-runtime-implements-maps-efficiently-without-generics \
