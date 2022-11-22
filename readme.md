@@ -699,6 +699,25 @@ for n := range c {
 }
 ```
 
+#### Reading and Writing to/from closed channel
+When you write to closed channel you are going to cause panic `send on closed channel` 
+```go
+func main() {
+	ch := make(chan int)
+	close(ch)
+	ch <- 1
+}
+```
+
+When you read from closed channel you are going to receive nil value of channel's type `0` in case below
+```go
+func main() {
+	ch := make(chan int)
+	close(ch)
+	fmt.Println(<-ch)
+}
+```
+
 #### Subscription
 Kinda useless pattern, but the main idea is next:
 
